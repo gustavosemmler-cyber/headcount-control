@@ -195,6 +195,7 @@ tr.rdc td:first-child{border-left:3px solid var(--purple);}
     <!-- campo oculto mantido para compatibilidade com funções que leem data-global -->
     <input type="date" id="data-global" style="display:none" oninput="gerarTexto()">
     <div class="hdate" id="hdate"></div>
+    <div id="gs-status" style="font-family:var(--mono);font-size:10px;color:#4caf50;letter-spacing:.05em;min-width:90px;text-align:right;"></div>
   </div>
 </header>
 
@@ -783,6 +784,66 @@ const MOTIVOS_JUST=['Folga','Férias','Suspensão','Treinamento','Licença médi
 
 const LS='hc_ssp36_v4';
 
+// ══ GOOGLE SHEETS SYNC ════════════════════════════════════
+// Cole aqui a URL do Web App após publicar o Apps Script:
+const GS_URL='';
+
+let _gsTimer=null;
+function agendarSincGS(){
+  if(!GS_URL)return;
+  clearTimeout(_gsTimer);
+  _gsTimer=setTimeout(()=>_salvarGS(),1500);
+}
+function _statusGS(s){
+  const el=document.getElementById('gs-status');
+  if(!el)return;
+  const msg={loading:'☁ Carregando…',saving:'☁ Salvando…',saved:'☁ Salvo',error:'⚠ Sem sincronia'};
+  const cor={loading:'#90caf9',saving:'#90caf9',saved:'#4caf50',error:'#ff7043'};
+  el.textContent=msg[s]||'';
+  el.style.color=cor[s]||'#90caf9';
+}
+async function _salvarGS(){
+  if(!GS_URL)return;
+  _statusGS('saving');
+  try{
+    const body=JSON.stringify({
+      escalas,logFull,diaristas,historico,
+      dataGlobal:document.getElementById('data-global')?.value||''
+    });
+    const r=await fetch(GS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body});
+    const j=await r.json();
+    _statusGS(j.ok?'saved':'error');
+  }catch(e){_statusGS('error');}
+}
+async function carregarGS(){
+  if(!GS_URL)return false;
+  try{
+    _statusGS('loading');
+    const r=await fetch(GS_URL+'?action=read');
+    const j=await r.json();
+    if(j.ok&&j.data){
+      const d=j.data;
+      if(Array.isArray(d.escalas)&&d.escalas.length)
+        escalas=d.escalas.map(e=>({...e,dsrDia:(e.dsrDia===undefined||e.dsrDia===null||e.dsrDia==='')?null:parseInt(e.dsrDia)}));
+      if(Array.isArray(d.logFull))logFull=d.logFull;
+      if(Array.isArray(d.diaristas))diaristas=d.diaristas;
+      if(Array.isArray(d.historico))historico=d.historico;
+      nxEsc=escalas.reduce((m,e)=>Math.max(m,e.id),0)+1;
+      if(d.dataGlobal){
+        const dg=document.getElementById('data-global');
+        const rd=document.getElementById('ros-data-ref');
+        if(dg&&!dg.value)dg.value=d.dataGlobal;
+        if(rd&&!rd.value)rd.value=d.dataGlobal;
+        sincronizarData(d.dataGlobal);
+      }
+      _statusGS('saved');
+      return true;
+    }
+  }catch(e){_statusGS('error');}
+  return false;
+}
+// ══════════════════════════════════════════════════════════
+
 // ══ PERSIST ════════════════════════════════════════════
 function salvarLS(){
   try{
@@ -799,6 +860,7 @@ function salvarLS(){
       arquivosPre:_arquivos.pre.map(a=>({nome:a.nome,txt:a.txt,linhas:a.linhas})),
     }));
   }catch(e){}
+  agendarSincGS();
 }
 function carregarLS(){
   try{
@@ -877,7 +939,7 @@ function sincronizarData(val,forcar){
 }
 
 // ══ INIT ═══════════════════════════════════════════════
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',async()=>{
   carregarLS();
   const now=new Date();
   document.getElementById('hdate').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
@@ -908,6 +970,13 @@ document.addEventListener('DOMContentLoaded',()=>{
     renderVal();
     document.getElementById('b-val').textContent=validados.length;
     calcAtual=calcMELI();
+  }
+
+  // Carrega dados do Google Sheets (sobrescreve localStorage se houver dados mais recentes)
+  const gsOk=await carregarGS();
+  if(gsOk){
+    renderEsc();renderEscSel();renderCad();renderVis();
+    if(validados.length){renderStats();renderVal();}
   }
 });
 
