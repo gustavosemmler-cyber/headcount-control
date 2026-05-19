@@ -1,7 +1,7 @@
 // Vercel Serverless Function — proxy para o Google Apps Script
 // Resolve o bloqueio de CORS: browser → /api/sync → Apps Script
 
-const GS_URL = 'https://script.google.com/a/macros/mercadolivre.com/s/AKfycbwagDaHS0RxS_LVLSEVs3gfqcxuWXu1VjWRYcgbCJYfvIly9pvcObrVMpkqzlLnjPNKIQ/exec';
+const GS_URL = 'https://script.google.com/macros/s/AKfycbznR9zgoEBROt-slQmlIV3mCcADjdKTZU-LwlVgRvEztA4MI4VcYiLujoZIY9ouH1Vf/exec';
 const MAX_BODY = 300_000; // 300 KB
 
 export default async function handler(req, res) {
