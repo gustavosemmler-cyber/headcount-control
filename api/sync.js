@@ -4,8 +4,16 @@
 const GS_URL = 'https://script.google.com/macros/s/AKfycbznR9zgoEBROt-slQmlIV3mCcADjdKTZU-LwlVgRvEztA4MI4VcYiLujoZIY9ouH1Vf/exec';
 const MAX_BODY = 300_000; // 300 KB
 
+// Habilita body parser do Vercel explicitamente para application/json
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '300kb',
+    },
+  },
+};
+
 export default async function handler(req, res) {
-  // Apenas o domínio do próprio app pode chamar este endpoint
   const origin = req.headers.origin || '';
   const allowed = origin.endsWith('.vercel.app') || origin === '';
   if (!allowed) {
@@ -25,14 +33,22 @@ export default async function handler(req, res) {
       gsRes = await fetch(GS_URL + '?action=read');
 
     } else if (req.method === 'POST') {
-      // req.body pode vir como string (text/plain) ou objeto (se Vercel parseou)
-      const bodyStr = typeof req.body === 'string'
-        ? req.body
-        : JSON.stringify(req.body);
+      // Vercel parseia application/json automaticamente → req.body é objeto
+      // Garante que sempre enviamos uma string JSON válida ao Apps Script
+      let bodyStr;
+      if (typeof req.body === 'string') {
+        bodyStr = req.body;
+      } else if (req.body && typeof req.body === 'object') {
+        bodyStr = JSON.stringify(req.body);
+      } else {
+        return res.status(400).json({ ok: false, error: 'Body inválido' });
+      }
 
       if (bodyStr.length > MAX_BODY) {
         return res.status(413).json({ ok: false, error: 'Payload muito grande' });
       }
+
+      console.log('Enviando para GS, tamanho:', bodyStr.length, 'chars');
 
       gsRes = await fetch(GS_URL, {
         method: 'POST',
