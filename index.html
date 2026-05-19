@@ -495,6 +495,7 @@ tr.rdc td:first-child{border-left:3px solid var(--purple);}
   <div class="bgroup">
     <button class="btn btn-p" onclick="showTab('fat')">Gerar fatura →</button>
     <button class="btn btn-o" onclick="showTab('imp')">← Reimportar</button>
+    <button class="btn btn-o" onclick="diagPessoa()">🔍 Buscar pessoa</button>
   </div>
 </div></div>
 
@@ -1080,6 +1081,75 @@ function cancelarImport(id){
 
 // ══ SCHEDULING ═════════════════════════════════════════
 // Retorna true se a escala está ativa na data informada
+function atualizarEscalaCadastro(idGroot,ldpa,novaEscalaId){
+  if(!novaEscalaId){alert('Escala não identificada.');return;}
+  const escNome=escalas.find(e=>e.id===novaEscalaId)?.nome||'?';
+  // encontra no cadastro por idGroot ou ldpa
+  const cad=logFull.find(lf=>
+    (idGroot&&String(lf.idGroot||'').trim()===String(idGroot))||
+    (ldpa&&norm(lf.ldpa||'')===norm(ldpa))
+  );
+  if(!cad){alert('Pessoa não encontrada no cadastro.');return;}
+  if(!confirm(`Atualizar ${cad.nome} de "${escalas.find(e=>e.id===cad.escalaId)?.nome||'?'}" para "${escNome}"?`))return;
+  cad.escalaId=novaEscalaId;
+  salvarLS();
+  // recruza para atualizar a validação
+  recruzar();
+  alert(`Cadastro de ${cad.nome} atualizado para ${escNome}!`);
+}
+
+function diagPessoa(){
+  const busca=prompt('Digite o nome, ID Groot ou LDPA da pessoa:','moraismo');
+  if(!busca)return;
+  const n=busca.toLowerCase().trim();
+
+  // busca no cadastro
+  const cadLF=logFull.filter(p=>
+    norm(p.nome).includes(n)||
+    String(p.idGroot||'').includes(busca)||
+    (p.ldpa||'').toLowerCase().includes(n)
+  );
+  const cadDI=diaristas.filter(p=>
+    norm(p.nome).includes(n)||
+    String(p.idGroot||'').includes(busca)||
+    (p.ldpa||'').toLowerCase().includes(n)
+  );
+
+  // busca no rostering
+  const ros=rostering.filter(p=>
+    norm(p.nome||'').includes(n)||
+    String(p.idGroot||'').includes(busca)||
+    (p.ldpa||'').toLowerCase().includes(n)
+  );
+
+  // busca nos validados
+  const val=validados.filter(p=>
+    norm(p.nome||'').includes(n)||
+    String(p.idGroot||'').includes(busca)||
+    (p.ldpa||'').toLowerCase().includes(n)
+  );
+
+  let msg=`=== DIAGNÓSTICO: "${busca}" ===\n\n`;
+
+  msg+=`CADASTRO Log Full (${cadLF.length}):\n`;
+  cadLF.forEach(p=>msg+=`  ${p.nome} | ID:${p.idGroot} | LDPA:${p.ldpa} | escalaId:${p.escalaId} | escala:${escalas.find(e=>e.id===p.escalaId)?.nome||'—'}\n`);
+
+  msg+=`\nCADASTRO Diaristas (${cadDI.length}):\n`;
+  cadDI.forEach(p=>msg+=`  ${p.nome} | ID:${p.idGroot} | LDPA:${p.ldpa}\n`);
+
+  msg+=`\nROSTERING (${ros.length}):\n`;
+  ros.forEach(p=>msg+=`  ${p.nome} | ID:${p.idGroot} | LDPA:${p.ldpa} | escalaId:${p.escalaId} | escala:${p.escalaNome}\n`);
+
+  msg+=`\nVALIDADOS (${val.length}):\n`;
+  val.forEach(p=>msg+=`  ${p.nome} | ID:${p.idGroot} | LDPA:${p.ldpa} | situacao:${p.situacao} | escala:${p.escalaNome}\n`);
+
+  if(!cadLF.length&&!cadDI.length&&!ros.length&&!val.length){
+    msg+=`Nenhum resultado encontrado.\nTente o ID Groot ou LDPA exato.`;
+  }
+
+  alert(msg);
+}
+
 function testarDSR(){
   const dataRef=document.getElementById('data-global')?.value||'';
   const dow=dataRef?new Date(dataRef+'T12:00:00').getDay():-1;
@@ -1515,23 +1585,43 @@ function calcMELI(){
 
     const pertence=(p)=>{
       if(p.cat!=='logfull')return false;
-      const chave=String(p.idGroot||'').trim()||norm(p.nome||'');
-      // 1. tem escala no cadastro → usa só o cadastro
-      if(idsMembros.has(chave))return true;
-      // 2. sem escala no cadastro → usa escalaId que veio no rostering como proxy
-      if(semEscalaCad.has(chave)&&p.escalaId===esc.id)return true;
+      const chaveId=String(p.idGroot||'').trim();
+      const chaveLdpa=norm(p.ldpa||'');
+      const chaveNome=norm(p.nome||'');
+
+      // REGRA PRINCIPAL: se há divergência de escala,
+      // a pessoa pertence SOMENTE à escala do rostering (onde o 3PL a colocou)
+      // Isso garante que presença E falta contam na escala correta
+      if(p.escalaErrada){
+        return p.escalaId===esc.id; // só pertence à escala do rostering
+      }
+
+      // SEM divergência: usa o cadastro como fonte primária
+      // 1. match por ID Groot
+      if(chaveId&&idsMembros.has(chaveId))return true;
+      // 2. match por LDPA ou nome (cadastro pode ter ID diferente do HCM)
+      const membroMatch=membros.find(lf=>{
+        if(chaveId&&String(lf.idGroot||'').trim()===chaveId)return true;
+        if(chaveLdpa&&norm(lf.ldpa||'')===chaveLdpa)return true;
+        if(chaveNome&&norm(lf.nome)===chaveNome)return true;
+        return false;
+      });
+      if(membroMatch)return true;
+      // 3. sem escala no cadastro → usa escalaId do rostering como proxy
+      if(semEscalaCad.has(chaveId||chaveNome)&&p.escalaId===esc.id)return true;
       return false;
     };
 
     const pres=validados.filter(p=>p.situacao==='confirmado'&&pertence(p)).length;
 
     if(isDSR){
-      // Escala em DSR — não opera, não entra em ABS/Gap
-      // DSR qty = min(sched, presentes) — nunca lança mais que o quadro
-      const dsrQty=sched; // scheduling = total programado para DSR
+      // roster da escala em DSR = quem veio no rostering desta escala (situacao=dsr)
+      const rosDSR=validados.filter(p=>p.situacao==='dsr'&&pertence(p)).length;
+      // DSR qty = min(sched, roster) — sem roster significa que ninguém foi importado = 0
+      const dsrQty=rosDSR>0?Math.min(sched,rosDSR):0;
       return{
         esc,tipo,sched,isDSR,
-        ros:0,meli:0,pres:0,abs:0,dsr:dsrQty,dsrSched:sched,dsrPresentes:pres,gap:0,
+        ros:rosDSR,meli:0,pres:0,abs:0,dsr:dsrQty,dsrSched:sched,dsrPresentes:pres,gap:0,
         excRoster:0,pctAbs:0,capPct:0,absMeliQty:0,abs3plQty:0,necessidade:0,
         cobGap:0,cobAbsMeli:0,cobAbs3pl:0,excCobGap:0,excCobAbs:0,cobTotal:0,
         membros:membros.length,pertence,
@@ -1888,7 +1978,30 @@ function processCSVRosMulti(arquivos){
       }
 
       const chave=p.idGroot||norm(p.nome);
-      if(vistos.has(chave))return;vistos.add(chave);
+
+      // deduplicação inteligente: se a pessoa já foi vista em outra escala,
+      // prevalece a linha com data de término mais próxima da data de referência
+      // (contrato mais específico para o dia)
+      if(vistos.has(chave)){
+        if(eidFallback){
+          const rosIdx=rostering.findIndex(r=>(r.idGroot&&r.idGroot===p.idGroot)||(r.ldpa&&norm(r.ldpa)===norm(p.ldpa||''))||(norm(r.nome)===norm(p.nome||'')));
+          if(rosIdx>=0&&rostering[rosIdx].escalaId!==eidFallback){
+            // compara data de término: linha com término mais próximo (menor) é mais específica
+            const termIdx=cab.findIndex(c=>c.includes('término')||c.includes('termino')||c.includes('data de t'));
+            const terAtual=termIdx>=0?parseDataBR(cols[termIdx]):null;
+            const terAnterior=rostering[rosIdx]._dataFim||null;
+            // usa a linha com menor data de término (mais específica para o dia)
+            if(terAtual&&(!terAnterior||terAtual<=terAnterior)){
+              rostering[rosIdx].escalaId=eidFallback;
+              rostering[rosIdx].escalaNome=escFallback?.nome||'—';
+              rostering[rosIdx].escalaMovida=true;
+              rostering[rosIdx]._dataFim=terAtual;
+            }
+          }
+        }
+        return;
+      }
+      vistos.add(chave);
 
       let escalaId=null,escalaNome='Não informada',escalaVeioDoArquivo=false;
       if(p.escala){
@@ -1907,7 +2020,10 @@ function processCSVRosMulti(arquivos){
         escalaId=eidFallback;escalaNome=escFallback?.nome||'—';
       }
 
-      rostering.push({nome:p.nome,idGroot:p.idGroot,ldpa:p.ldpa,escalaId,escalaNome,escalaVeioDoArquivo});
+      // salva data de término para desempate na deduplicação
+      const termIdx2=cab.findIndex(c=>c.includes('término')||c.includes('termino')||c.includes('data de t'));
+      const dataFimPessoa=termIdx2>=0?parseDataBR(cols[termIdx2]):null;
+      rostering.push({nome:p.nome,idGroot:p.idGroot,ldpa:p.ldpa,escalaId,escalaNome,escalaVeioDoArquivo,_dataFim:dataFimPessoa});
     });
   });
 }
@@ -1998,7 +2114,11 @@ function cruzar(){
       if(cad){
         escalaCadastro=cad.escalaId;
         escalaCadastroNome=escalas.find(e=>e.id===cad.escalaId)?.nome||'—';
-        if(p.escalaVeioDoArquivo&&p.escalaId&&cad.escalaId&&p.escalaId!==cad.escalaId){
+        // detecta divergência:
+        // - escala veio de coluna do arquivo (escalaVeioDoArquivo=true), OU
+        // - escala veio do select manual (fallback) — também válido comparar
+        // Em ambos os casos: só sinaliza se o cadastro tem escala definida e é diferente
+        if(p.escalaId&&cad.escalaId&&p.escalaId!==cad.escalaId){
           escalaErrada=true;
         }
       }
@@ -2042,6 +2162,43 @@ function cruzar(){
       }
     }
   });
+
+  // ── PESSOAS NO CADASTRO SEM ROSTERING E SEM LMS ──────
+  // Se está cadastrado mas não apareceu em nenhum dos dois, deve aparecer como falta
+  // (o 3PL pode ter esquecido de rosterizar, ou a pessoa mudou de escala)
+  const dataRefObj=dataRef?new Date(dataRef+'T12:00:00'):null;
+  logFull.forEach(lf=>{
+    // verifica se já está nos validados
+    const jaValidado=validados.some(v=>{
+      if(lf.idGroot&&v.idGroot&&String(lf.idGroot)===String(v.idGroot))return true;
+      if(lf.ldpa&&v.ldpa&&norm(lf.ldpa)===norm(v.ldpa))return true;
+      if(lf.nome&&v.nome&&norm(lf.nome)===norm(v.nome))return true;
+      return false;
+    });
+    if(jaValidado)return;
+
+    // verifica se a escala dela está ativa no dia
+    const escPessoa=escalas.find(e=>e.id===lf.escalaId);
+    if(!escPessoa)return; // sem escala definida — não processa
+    if(!escalaAtivaNoDia(escPessoa,dataRef))return; // escala inativa no dia
+
+    // se está em DSR hoje, marca como DSR (não é falta)
+    const emDSR=escalaEmDSR(escPessoa,dataRef);
+    const situacao=emDSR?'dsr':'falta';
+
+    validados.push({
+      nome:lf.nome,idGroot:lf.idGroot,ldpa:lf.ldpa,
+      cat:'logfull',subtipo:lf.tipo||'FT',
+      escalaId:lf.escalaId,escalaNome:escPessoa.nome,
+      situacao,
+      origem:'cadastro', // veio só do cadastro
+      rosterPendente:false,
+      semRostering:true, // flag: não estava no rostering
+      escalaErrada:false,escalaCadastro:lf.escalaId,escalaCadastroNome:escPessoa.nome,
+      escalaHCMId:null,escalaHCMNome:'—',
+    });
+  });
+
   showTab('val');renderStats();renderVal();salvarLS();
 }
 
@@ -2134,8 +2291,14 @@ function renderStats(){
     }
     alertEsc.classList.add('show');
     document.getElementById('al-esc-errada-t').innerHTML=
-      `<strong style="color:var(--purple)">${escalaErrada.length} pessoa(s) rosterizada(s) em escala diferente do cadastro</strong> — contabilizada(s) nas duas escalas:<br>`+
-      escalaErrada.map(p=>`<span style="color:var(--purple)">▸ <strong>${p.nome||p.idGroot}</strong> — HCM: <strong>${p.escalaHCMNome||'?'}</strong> · Cadastro: <strong>${p.escalaCadastroNome||'?'}</strong></span>`).join('<br>');
+      `<strong style="color:var(--purple)">${escalaErrada.length} pessoa(s) trabalhando em escala diferente do cadastro</strong> — contabilizada(s) na escala do rostering (presença e falta):<br>`+
+      escalaErrada.map(p=>{
+        const escRosNome=escalas.find(e=>e.id===p.escalaHCMId)?.nome||p.escalaNome||'?';
+        return`<div style="margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="color:var(--purple)">▸ <strong>${p.nome||p.idGroot}</strong> — Rostering: <strong>${escRosNome}</strong> · Cadastro: <strong>${p.escalaCadastroNome||'?'}</strong></span>
+          <button class="btn btn-o btn-sm" onclick="atualizarEscalaCadastro('${p.idGroot||''}','${p.ldpa||''}',${p.escalaHCMId||null})">Atualizar cadastro →</button>
+        </div>`;
+      }).join('');
   } else if(alertEsc){
     alertEsc.classList.remove('show');
   }
@@ -2164,8 +2327,8 @@ function renderStats(){
       const tipoPill=e.tipo==='FT'?'<span class="pill p-ft">FT</span>':'<span class="pill p-pt">PT</span>';
       const temProblema=e.gap>0||e.abs>0;
       const coberto=(e.cobGap+e.cobAbs)>=e.necessidade;
-      const statusTxt=!temProblema?'✓ quadro completo':coberto?'✓ coberto':'⚠ cobertura parcial';
-      const statusCor=!temProblema?'var(--green)':coberto?'var(--amber)':'var(--red)';
+      const statusTxt=e.isDSR?'◆ DSR hoje':!temProblema&&e.ros>0?'✓ quadro completo':e.ros===0&&!e.isDSR?'⚠ sem rostering':coberto?'✓ coberto':'⚠ cobertura parcial';
+      const statusCor=e.isDSR?'var(--purple)':!temProblema&&e.ros>0?'var(--green)':e.ros===0&&!e.isDSR?'var(--red)':coberto?'var(--amber)':'var(--red)';
 
       // mini tabela de pessoas por escala (presentes + faltas)
       const todosDaEscala=[...e.pessoasPres,...e.pessoasAbs];
@@ -2246,14 +2409,15 @@ function renderVal(){
     const rc=p.situacao==='falta'?'rfa':p.cat==='desconhecido'&&p.situacao==='soro'?'rso':p.cat==='desconhecido'?'rdc':'';
     const tp=p.cat==='logfull'?(p.subtipo==='PT'?'<span class="pill p-pt">PT</span>':'<span class="pill p-ft">FT</span>'):p.cat==='diarista'?'<span class="pill p-di">DIARISTA</span>':'<span class="pill p-dc">SEM CAD.</span>';
     const pendTag=p.rosterPendente?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:#2a1e08;color:var(--amber);margin-left:4px;">⚠ roster pendente</span>`:'';
+    const semRosTag=p.semRostering?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:#2a0d0d;color:var(--red);margin-left:4px;">⚠ sem rostering</span>`:'';
     const escTag=p.escalaErrada?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:var(--pbg);color:var(--purple);border:1px solid #3d1a6e;margin-left:4px;" title="HCM: ${p.escalaHCMNome||'?'} · Cadastro: ${p.escalaCadastroNome||'?'}">🔀 escala divergente</span>`:'';
     const escNomeExib=p.escalaErrada
       ?`<span style="color:var(--purple)">${p.escalaHCMNome||'?'}</span> <span style="font-size:10px;color:var(--muted)">/ cad: ${p.escalaCadastroNome||'?'}</span>`
       :(p.escalaNome||p.escalaCadastroNome||'—');
     const sp=p.situacao==='confirmado'
-      ?`<span class="pill p-ok">CONFIRMADO</span>${pendTag}${escTag}`
-      :p.situacao==='falta'?'<span class="pill p-fa">FALTA</span>'
-      :p.situacao==='dsr'?`<span class="pill" style="background:#1a0d2e;color:var(--purple);border:1px solid #3d1a6e;">DSR</span>`
+      ?`<span class="pill p-ok">CONFIRMADO</span>${pendTag}${semRosTag}${escTag}`
+      :p.situacao==='falta'?`<span class="pill p-fa">FALTA</span>${semRosTag}`
+      :p.situacao==='dsr'?`<span class="pill" style="background:#1a0d2e;color:var(--purple);border:1px solid #3d1a6e;">DSR</span>${semRosTag}`
       :p.situacao==='justificado'?`<span class="pill" style="background:#0f2030;color:var(--cyan);border:1px solid #1a4060;">✦ ${p.justificativa||'Justificado'}</span>`
       :p.cat==='desconhecido'?'<span class="pill p-so">SÓ LMS</span>'
       :'<span class="pill p-so">SÓ LMS</span>';
@@ -2573,22 +2737,30 @@ function gerarFatura(){
       dsrBlock.style.display='block';
       if(dsrLabel)dsrLabel.textContent=`${dsrTotal} pessoa(s) de folga`;
       if(dsrContent){
+        const escDSRvisiveis=escalasDSR.filter(e=>(e.dsr||0)>0);
+        if(escDSRvisiveis.length===0){
+          dsrBlock.style.display='none';
+        } else {
         dsrContent.innerHTML=`
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-bottom:1px solid var(--border);">
-            ${escalasDSR.map(e=>`
+            ${escDSRvisiveis.map(e=>`
               <div style="padding:12px 16px;border-right:1px solid var(--border);">
                 <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
                   <span class="pill ${e.tipo==='FT'?'p-ft':'p-pt'}" style="font-size:10px;">${e.tipo}</span>
                   <span style="font-size:12px;font-weight:600;">${e.esc.nome}</span>
                 </div>
                 <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--purple)">${e.dsr||0}</div>
-                <div style="font-size:10px;color:var(--muted);margin-top:2px;">de ${e.dsrSched||e.sched||0} agendados</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:2px;">
+                  Sched: ${e.dsrSched||e.sched||0} · Roster: ${e.ros||0}
+                  ${(e.ros||0)>0&&(e.ros||0)<(e.dsrSched||e.sched||0)?`<span style="color:var(--amber)"> · quadro incompleto</span>`:''}
+                </div>
               </div>`).join('')}
           </div>
           <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);">
             <span style="font-size:12px;color:var(--muted);">Total DSR — não entra no cálculo de ABS</span>
-            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--purple)">${dsrTotal} pessoa(s)</span>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--purple)">${escDSRvisiveis.reduce((s,e)=>s+(e.dsr||0),0)} pessoa(s)</span>
           </div>`;
+        }
       }
     } else {
       dsrBlock.style.display='none';
@@ -2691,8 +2863,8 @@ function gerarFatura(){
         const temProblema=e.gap>0||e.abs>0;
         const cobTotal=e.cobGap+e.cobAbsMeli+e.cobAbs3pl;
         const coberto=cobTotal>=e.necessidade;
-        const statusIcon=!temProblema?'✓ quadro completo':coberto?'✓ coberto':'⚠ cobertura insuficiente';
-        const statusCor=!temProblema?'var(--green)':coberto?'var(--amber)':'var(--red)';
+        const statusIcon=e.isDSR?'◆ DSR hoje':!temProblema&&(e.ros||0)>0?'✓ quadro completo':(e.ros||0)===0&&!e.isDSR?'⚠ sem rostering':coberto?'✓ coberto':'⚠ cobertura insuficiente';
+        const statusCor=e.isDSR?'var(--purple)':!temProblema&&(e.ros||0)>0?'var(--green)':(e.ros||0)===0&&!e.isDSR?'var(--red)':coberto?'var(--amber)':'var(--red)';
 
         return`<div style="margin-bottom:10px;background:var(--bg2);border:1px solid ${temProblema?(coberto?'var(--amber)':'var(--red)'):'var(--border)'};border-radius:7px;overflow:hidden;">
           <div style="padding:8px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--bg3);">
@@ -2823,7 +2995,6 @@ function salvarDia(){
   historico=historico.filter(d=>d.data!==data);
   const c=calcAtual||calcMELI();
 
-  // listas detalhadas para o resumão
   const confirmadosFT=validados.filter(p=>p.situacao==='confirmado'&&p.cat==='logfull'&&p.subtipo==='FT');
   const confirmadosPT=validados.filter(p=>p.situacao==='confirmado'&&p.cat==='logfull'&&p.subtipo==='PT');
   const faltasFT=validados.filter(p=>p.situacao==='falta'&&p.cat==='logfull'&&p.subtipo==='FT');
@@ -2831,28 +3002,46 @@ function salvarDia(){
   const diaristasPresentes=validados.filter(p=>p.cat==='diarista');
   const soroList=validados.filter(p=>p.situacao==='soro');
   const semCadastro=validados.filter(p=>p.cat==='desconhecido');
+  const dsrList=validados.filter(p=>p.situacao==='dsr');
+  const justList=validados.filter(p=>p.situacao==='justificado');
 
   historico.push({
-    data, escalaNome:c.esc?c.esc.nome:'—',
+    data,
+    escalaNome:escalasAtivas().filter(e=>!escalaEmDSR(e,data)).map(e=>e.nome).join(', ')||'—',
+    // scheduling
     schedFT:c.schedFT, schedPT:c.schedPT,
     rosFT:c.rosFT, rosPT:c.rosPT,
     meliFT:c.meliFT, meliPT:c.meliPT,
     presFT:c.presFT, presPT:c.presPT,
     absFT:c.absFT, absPT:c.absPT,
+    justFT:c.justFT||0, justPT:c.justPT||0,
     gapFT:c.gapFT, gapPT:c.gapPT,
+    // DSR
+    dsrFT:c.dsrFT||0, dsrPT:c.dsrPT||0, dsrTotal:c.dsrTotal||0,
+    escalasDSR:JSON.parse(JSON.stringify(c.escalasDSR||[])),
+    // CAP
     pctAbsGeral:c.pctAbsGeral, capPctGeral:c.capPctGeral,
+    absMeliGeralQty:c.absMeliGeralQty||0,
+    // excedentes
+    excRosterFT:c.excRosterFT||0, excRosterPT:c.excRosterPT||0,
+    excCobGapFT:c.excCobGapFT||0, excCobGapPT:c.excCobGapPT||0,
+    excCobAbsFT:c.excCobAbsFT||0, excCobAbsPT:c.excCobAbsPT||0,
+    // diaristas
     diTC:c.diTC,
-    diCobGapFT:c.diCobGapFT, diCobGapPT:c.diCobGapPT,
-    diCobAbsFT:c.diCobAbsFT, diCobAbsPT:c.diCobAbsPT,
-    diCobAbsFT_mel:c.diCobAbsFT_mel, diCobAbsPT_mel:c.diCobAbsPT_mel,
-    diCobAbsFT_3pl:c.diCobAbsFT_3pl, diCobAbsPT_3pl:c.diCobAbsPT_3pl,
-    excCobGapFT:c.excCobGapFT, excCobGapPT:c.excCobGapPT,
-    excCobAbsFT:c.excCobAbsFT, excCobAbsPT:c.excCobAbsPT,
-    diFat:c.diFat,
+    diCobGapFT:c.diCobGapFT||0, diCobGapPT:c.diCobGapPT||0,
+    diCobAbsFT:c.diCobAbsFT||0, diCobAbsPT:c.diCobAbsPT||0,
+    diCobAbsFT_mel:c.diCobAbsFT_mel||0, diCobAbsPT_mel:c.diCobAbsPT_mel||0,
+    diCobAbsFT_3pl:c.diCobAbsFT_3pl||0, diCobAbsPT_3pl:c.diCobAbsPT_3pl||0,
+    diFat:c.diFat||0,
+    // totais
     totFT:c.totFT, totPT:c.totPT, totDI:c.totDI, totGeral:c.totGeral,
     dcCount:c.dcCount,
+    // por escala
+    porEscala:JSON.parse(JSON.stringify(c.porEscala||[])),
+    // texto e obs
     obs:document.getElementById('obs').value,
     texto:document.getElementById('cbox').textContent,
+    // listas
     validados:JSON.parse(JSON.stringify(validados)),
     confirmadosFT:JSON.parse(JSON.stringify(confirmadosFT)),
     confirmadosPT:JSON.parse(JSON.stringify(confirmadosPT)),
@@ -2861,6 +3050,8 @@ function salvarDia(){
     diaristasPresentes:JSON.parse(JSON.stringify(diaristasPresentes)),
     soroList:JSON.parse(JSON.stringify(soroList)),
     semCadastro:JSON.parse(JSON.stringify(semCadastro)),
+    dsrList:JSON.parse(JSON.stringify(dsrList)),
+    justList:JSON.parse(JSON.stringify(justList)),
   });
   historico.sort((a,b)=>b.data.localeCompare(a.data));
   salvarLS();
@@ -2962,133 +3153,184 @@ function renderDiaCard(d,i,aberto){
   const diCobGap=(d.diCobGapFT||0)+(d.diCobGapPT||0);
   const diCobAbsMeli=(d.diCobAbsFT_mel||0)+(d.diCobAbsPT_mel||0);
   const diCobAbs3pl=(d.diCobAbsFT||0)+(d.diCobAbsPT||0);
+  const diMeliTotal=(d.diFat||0)+diCobAbsMeli;
+  const di3plTotal=diCobGap+diCobAbs3pl;
+  const dsrTotal=d.dsrTotal||0;
+  const escalasDSR=d.escalasDSR||[];
 
-  // ── helper: tabela de pessoas ──────────────────────
+  // usa as mesmas funções de renderização da fatura
+  // criamos um objeto "c" compatível com o que gerarFatura usa
+  const c={...d,
+    escalasDSR, dsrTotal,
+    justList:d.justList||[],
+    faltasFT:d.faltasFT||[], faltasPT:d.faltasPT||[],
+    soroList:d.soroList||[], dcList:d.semCadastro||[],
+  };
+
   const tabelaPessoas=(lista,titulo,cor,colunaExtra)=>{
     if(!lista||!lista.length)return'';
-    return`<div style="margin-bottom:10px;">
-      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:${cor};margin-bottom:4px;padding:0 2px;">${titulo} <span style="opacity:.6">(${lista.length})</span></div>
-      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:auto;max-height:200px;">
+    return`<div style="margin-bottom:8px;">
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:${cor};margin-bottom:4px;">${titulo} <span style="opacity:.6">(${lista.length})</span></div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:auto;max-height:180px;">
         <table style="width:100%;border-collapse:collapse;">
           <thead><tr>
-            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">Nome</th>
-            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">ID Groot</th>
-            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">LDPA</th>
-            ${colunaExtra?`<th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">${colunaExtra}</th>`:''}
+            <th style="text-align:left;padding:4px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">Nome</th>
+            <th style="text-align:left;padding:4px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">ID Groot</th>
+            <th style="text-align:left;padding:4px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">LDPA</th>
+            ${colunaExtra?`<th style="text-align:left;padding:4px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">${colunaExtra}</th>`:``}
           </tr></thead>
-          <tbody>${lista.map(p=>`<tr style="${p.rosterPendente?'background:#2a1e08;':p.situacao==='falta'?'background:var(--rbg);':''}">
-            <td style="padding:5px 10px;font-size:11px;border-bottom:1px solid var(--border)">${p.nome||'—'}${p.rosterPendente?'<span style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-left:5px;">⚠</span>':''}</td>
-            <td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.idGroot||'—'}</td>
-            <td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.ldpa||'—'}</td>
-            ${colunaExtra?`<td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.escalaNome||'—'}</td>`:''}
+          <tbody>${lista.map(p=>`<tr>
+            <td style="padding:4px 10px;font-size:11px;border-bottom:1px solid var(--border)">${p.nome||'—'}${p.rosterPendente?'<span style="color:var(--amber);font-size:9px;margin-left:4px;">⚠</span>':''}</td>
+            <td style="padding:4px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.idGroot||'—'}</td>
+            <td style="padding:4px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.ldpa||'—'}</td>
+            ${colunaExtra?`<td style="padding:4px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.escalaNome||'—'}</td>`:''}
           </tr>`).join('')}</tbody>
         </table>
       </div>
     </div>`;
   };
 
-  // ── helper: métrica ────────────────────────────────
-  const met=(lbl,val,cor,sub)=>`
-    <div style="padding:10px 12px;border-right:1px solid var(--border);text-align:center;">
-      <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">${lbl}</div>
-      <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:${cor};line-height:1">${val}</div>
-      ${sub?`<div style="font-size:9px;color:var(--muted);margin-top:2px;">${sub}</div>`:''}
-    </div>`;
-
   const corpo=`
-    <!-- ── SEÇÃO 1: RESUMO DE LANÇAMENTO ─────────────── -->
-    <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg3);">
-      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:10px;">Resumo para lançamento</div>
+    <!-- BLOCO 1: HC PRESENTE -->
+    <div style="border-bottom:1px solid var(--border);">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid var(--border);">
+        <div style="padding:12px 14px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Full Time presentes</div>
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--green)">${d.presFT||0}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">de ${d.rosFT||0} rosterizados</div>
+        </div>
+        <div style="padding:12px 14px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Part Time presentes</div>
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--teal)">${d.presPT||0}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">de ${d.rosPT||0} rosterizados</div>
+        </div>
+        <div style="padding:12px 14px;text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Diaristas (LMS)</div>
+          <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--cyan)">${d.diTC||0}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">presentes no LMS</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+        <div style="padding:8px 14px;border-right:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:var(--muted)">ABS FT</span><strong style="font-family:var(--mono);color:${absTot>0?'var(--red)':'var(--muted)'}">${d.absFT||0}</strong></div>
+        <div style="padding:8px 14px;border-right:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:var(--muted)">Gap FT</span><strong style="font-family:var(--mono);color:${gapTot>0?'var(--amber)':'var(--muted)'}">${d.gapFT||0}</strong></div>
+        <div style="padding:8px 14px;border-right:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:var(--muted)">ABS PT</span><strong style="font-family:var(--mono);color:${(d.absPT||0)>0?'var(--red)':'var(--muted)'}">${d.absPT||0}</strong></div>
+        <div style="padding:8px 14px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:11px;color:var(--muted)">Gap PT</span><strong style="font-family:var(--mono);color:${(d.gapPT||0)>0?'var(--amber)':'var(--muted)'}">${d.gapPT||0}</strong></div>
+      </div>
+    </div>
 
+    <!-- BLOCO 2: DSR -->
+    ${escalasDSR.length>0?`
+    <div style="border-bottom:1px solid var(--border);">
+      <div style="padding:9px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);">
+        <span style="font-size:12px;font-weight:600;">DSR do dia — folgas programadas</span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--purple)">${dsrTotal} pessoa(s) de folga</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+        ${escalasDSR.filter(e=>(e.dsr||0)>0).map(e=>`
+        <div style="padding:10px 14px;border-right:1px solid var(--border);">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+            <span class="pill ${e.tipo==='FT'?'p-ft':'p-pt'}" style="font-size:9px;">${e.tipo}</span>
+            <span style="font-size:11px;font-weight:600;">${e.esc?.nome||'—'}</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--purple)">${e.dsr||0}</div>
+          <div style="font-size:10px;color:var(--muted);">Sched: ${e.sched||0} · Roster: ${e.ros||0}</div>
+        </div>`).join('')}
+      </div>
+    </div>`:''}
+
+    <!-- BLOCO 3: RESUMO PARA LANÇAMENTO -->
+    <div style="border-bottom:1px solid var(--border);padding:12px 14px;background:var(--bg3);">
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:8px;">Resumo para lançamento</div>
       <!-- FT -->
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="pill p-ft" style="font-size:10px;">FT</span>
           <span style="font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600;">${d.presFT||0} presentes</span>
-          ${(d.gapFT||0)>0||((d.excCobGapFT||0)+(d.diCobGapFT||0))>0?`
-            <span style="font-size:11px;color:var(--muted)">+</span>
-            <span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapFT||0)+(d.diCobGapFT||0)} cobertura gap</span>`:''}
+          ${((d.excCobGapFT||0)+(d.diCobGapFT||0))>0?`<span style="font-size:11px;color:var(--muted)">+</span><span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapFT||0)+(d.diCobGapFT||0)} cobertura gap</span>`:''}
           <span style="font-size:11px;color:var(--muted)">=</span>
           <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--green)">${d.meliFT||0} a lançar</span>
         </div>
         <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green)">${d.meliFT||0}</div>
       </div>
-
       <!-- PT -->
       ${(d.schedPT||0)>0||((d.meliPT||0)>0)?`
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;">
-        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:5px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span class="pill p-pt" style="font-size:10px;">PT</span>
           <span style="font-family:var(--mono);font-size:13px;color:var(--teal);font-weight:600;">${d.presPT||0} presentes</span>
-          ${(d.gapPT||0)>0?`<span style="font-size:11px;color:var(--muted)">+</span><span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapPT||0)+(d.diCobGapPT||0)} cobertura gap</span>`:''}
+          ${((d.excCobGapPT||0)+(d.diCobGapPT||0))>0?`<span style="font-size:11px;color:var(--muted)">+</span><span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapPT||0)+(d.diCobGapPT||0)} cobertura gap</span>`:''}
           <span style="font-size:11px;color:var(--muted)">=</span>
           <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--teal)">${d.meliPT||0} a lançar</span>
         </div>
         <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--teal)">${d.meliPT||0}</div>
       </div>`:''}
-
       <!-- Diaristas -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
-        <div style="padding:9px 12px;background:var(--rbg);border:1px solid var(--border);border-radius:6px;">
-          <div style="font-size:10px;color:var(--red);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px;">Diaristas 3PL</div>
-          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--red)">${diCobGap+diCobAbs3pl}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${diCobGap>0?diCobGap+' gap':''} ${diCobAbs3pl>0?(diCobGap>0?'· ':'')+diCobAbs3pl+' ABS excede CAP':''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+        <div style="padding:8px 12px;background:var(--rbg);border:1px solid var(--border);border-radius:6px;">
+          <div style="font-size:10px;color:var(--red);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">Diaristas 3PL</div>
+          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--red)">${di3plTotal}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px;">${diCobGap>0?diCobGap+' gap':''} ${diCobAbs3pl>0?(diCobGap>0?'· ':'')+diCobAbs3pl+' ABS excede CAP':''}</div>
         </div>
-        <div style="padding:9px 12px;background:var(--gbg);border:1px solid var(--border);border-radius:6px;">
-          <div style="font-size:10px;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px;">Diaristas MELI</div>
-          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--cyan)">${(d.diFat||0)+diCobAbsMeli}</div>
-          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${diCobAbsMeli>0?diCobAbsMeli+' cob. ABS CAP':''} ${d.diFat>0?((diCobAbsMeli>0?'· ':'')+d.diFat+' excedente'):''}</div>
+        <div style="padding:8px 12px;background:var(--gbg);border:1px solid var(--border);border-radius:6px;">
+          <div style="font-size:10px;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">Diaristas MELI</div>
+          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--cyan)">${diMeliTotal}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:1px;">${diCobAbsMeli>0?diCobAbsMeli+' cob. ABS CAP':''} ${(d.diFat||0)>0?((diCobAbsMeli>0?'· ':'')+d.diFat+' excedente'):''}</div>
         </div>
       </div>
-
       <!-- Total MELI -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
-        ${met('FT',d.meliFT||0,'var(--green)','')}
-        ${met('PT',d.meliPT||0,'var(--teal)','')}
-        ${met('Diaristas',(d.diFat||0)+diCobAbsMeli,'var(--cyan)','')}
-        <div style="padding:10px 12px;text-align:center;background:rgba(34,197,94,.07);">
-          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Total MELI</div>
-          <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--green)">${d.totGeral||0}</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-top:5px;">
+        <div style="padding:9px 12px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">FT</div><div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--green)">${d.totFT||0}</div></div>
+        <div style="padding:9px 12px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">PT</div><div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--teal)">${d.totPT||0}</div></div>
+        <div style="padding:9px 12px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Diaristas</div><div style="font-family:var(--mono);font-size:20px;font-weight:700;color:var(--cyan)">${d.totDI||0}</div></div>
+        <div style="padding:9px 12px;text-align:center;background:rgba(34,197,94,.07);"><div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Total MELI</div><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--green)">${d.totGeral||0}</div></div>
+      </div>
+    </div>
+
+    <!-- BLOCO 4: CAP ABS -->
+    <div style="border-bottom:1px solid var(--border);">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+        <div style="padding:10px 12px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">% ABS do dia</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber)">${d.pctAbsGeral||0}%</div>
+        </div>
+        <div style="padding:10px 12px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">CAP MELI</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text)">${d.capPctGeral||0}%</div>
+        </div>
+        <div style="padding:10px 12px;border-right:1px solid var(--border);text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">Diaristas MELI paga</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green)">${diCobAbsMeli}</div>
+        </div>
+        <div style="padding:10px 12px;text-align:center;">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:3px;">Diaristas 3PL paga</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--red)">${diCobAbs3pl}</div>
         </div>
       </div>
     </div>
 
-    <!-- ── SEÇÃO 2: ABS / GAP / CAP ──────────────────── -->
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border);">
-      ${met('Sched',`${d.schedFT||0}FT · ${d.schedPT||0}PT`,'var(--a2)','')}
-      ${met('Roster',`${d.rosFT||0}FT · ${d.rosPT||0}PT`,'var(--a2)','')}
-      ${met('ABS',absTot,absTot>0?'var(--red)':'var(--muted)',`FT:${d.absFT||0} · PT:${d.absPT||0}`)}
-      ${met('Gap',gapTot,gapTot>0?'var(--amber)':'var(--muted)',`FT:${d.gapFT||0} · PT:${d.gapPT||0}`)}
-      <div style="padding:10px 12px;text-align:center;">
-        <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">%ABS · CAP</div>
-        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--amber)">${d.pctAbsGeral||0}%</div>
-        <div style="font-size:9px;color:var(--muted);margin-top:2px;">CAP ${d.capPctGeral||0}%</div>
-      </div>
-    </div>
-
-    <!-- ── SEÇÃO 3: LISTAS DE PESSOAS ────────────────── -->
+    <!-- BLOCO 5: PESSOAS -->
     <div style="padding:12px 14px;border-bottom:1px solid var(--border);">
-      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:10px;">Pessoas do dia</div>
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:8px;">Pessoas do dia</div>
       ${tabelaPessoas(d.confirmadosFT,'✓ Full Time presentes','var(--green)','Escala')}
       ${tabelaPessoas(d.confirmadosPT,'✓ Part Time presentes','var(--teal)','Escala')}
       ${tabelaPessoas(d.diaristasPresentes,'◆ Diaristas (LMS)','var(--cyan)','')}
-      ${tabelaPessoas(d.faltasFT,'✗ Faltas — Full Time','var(--red)','Escala')}
-      ${tabelaPessoas(d.faltasPT,'✗ Faltas — Part Time','var(--red)','Escala')}
-      ${tabelaPessoas(d.soroList,'⚠ Só no LMS — verificar','var(--amber)','Tipo')}
-      ${tabelaPessoas(d.semCadastro,'❓ Sem cadastro','#a78bfa','')}
+      ${tabelaPessoas(d.faltasFT,'✗ Faltas FT','var(--red)','Escala')}
+      ${tabelaPessoas(d.faltasPT,'✗ Faltas PT','var(--red)','Escala')}
+      ${tabelaPessoas(d.justList||[],'✦ Ausências justificadas','var(--cyan)','')}
+      ${tabelaPessoas(d.dsrList||[],'◆ DSR — folgas programadas','var(--purple)','Escala')}
+      ${tabelaPessoas(d.soroList||[],'⚠ Só no LMS','var(--amber)','')}
+      ${tabelaPessoas(d.semCadastro||[],'❓ Sem cadastro','var(--purple)','')}
     </div>
 
-    <!-- ── SEÇÃO 4: OBS + TEXTO ──────────────────────── -->
+    <!-- BLOCO 6: OBS + TEXTO -->
     ${d.obs?`<div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);"><strong style="color:var(--text)">Obs:</strong> ${d.obs}</div>`:''}
     ${d.texto?`
     <details style="border-bottom:1px solid var(--border);">
-      <summary style="padding:9px 14px;font-size:11px;color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;">
-        <span style="font-family:var(--mono)">▶</span> Ver texto do lançamento
-      </summary>
+      <summary style="padding:9px 14px;font-size:11px;color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;"><span style="font-family:var(--mono)">▶</span> Ver texto do lançamento</summary>
       <pre style="margin:0;padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:pre-wrap;line-height:1.6;background:var(--bg3);">${d.texto}</pre>
     </details>`:''}
 
-    <!-- ── AÇÕES ─────────────────────────────────────── -->
+    <!-- AÇÕES -->
     <div style="padding:9px 14px;display:flex;gap:8px;">
       <button class="btn btn-o btn-sm" onclick="copiarTextoDia('${d.data}')">Copiar texto</button>
       <button class="btn btn-d btn-sm" onclick="event.stopPropagation();delHist('${d.data}')">Excluir</button>
@@ -3097,12 +3339,13 @@ function renderDiaCard(d,i,aberto){
   return`<div class="hist-day" style="margin-bottom:8px;">
     <div class="hist-hdr" onclick="toggleHist(${i},this)">
       <div class="hist-date">${dtf}</div>
-      <div class="hist-esc">${d.escalaNome}</div>
+      <div class="hist-esc" style="font-size:11px;color:var(--muted);flex:1">${d.escalaNome||'—'}</div>
       <div class="hist-stats">
         <span class="hstat" style="color:var(--green)">FT ${d.meliFT||0}</span>
         <span class="hstat" style="color:var(--teal)">PT ${d.meliPT||0}</span>
-        <span class="hstat" style="color:var(--cyan)">DI ${(d.diFat||0)+diCobAbsMeli}</span>
+        <span class="hstat" style="color:var(--cyan)">DI ${d.totDI||0}</span>
         ${absTot>0?`<span class="hstat" style="color:var(--red)">ABS ${absTot}</span>`:''}
+        ${dsrTotal>0?`<span class="hstat" style="color:var(--purple)">DSR ${dsrTotal}</span>`:''}
         ${gapTot>0?`<span class="hstat" style="color:var(--amber)">GAP ${gapTot}</span>`:''}
         <span class="hstat" style="color:var(--green);font-weight:700">= ${d.totGeral||0}</span>
       </div>
