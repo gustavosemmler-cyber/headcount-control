@@ -195,7 +195,10 @@ tr.rdc td:first-child{border-left:3px solid var(--purple);}
     <!-- campo oculto mantido para compatibilidade com funções que leem data-global -->
     <input type="date" id="data-global" style="display:none" oninput="gerarTexto()">
     <div class="hdate" id="hdate"></div>
-    <div id="gs-status" style="font-family:var(--mono);font-size:10px;color:#4caf50;letter-spacing:.05em;min-width:90px;text-align:right;"></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div id="gs-status" style="font-family:var(--mono);font-size:10px;color:#4caf50;letter-spacing:.05em;min-width:90px;text-align:right;"></div>
+      <button id="btn-sync" onclick="syncManual()" title="Buscar dados mais recentes" style="background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--muted);font-size:11px;padding:3px 8px;cursor:pointer;font-family:var(--mono);display:none;">↺</button>
+    </div>
   </div>
 </header>
 
@@ -845,6 +848,23 @@ async function carregarGS(){
   }catch(e){_statusGS('error');}
   return false;
 }
+async function syncManual(){
+  const btn=document.getElementById('btn-sync');
+  if(btn){btn.textContent='↺';btn.disabled=true;}
+  const ok=await carregarGS();
+  if(ok){renderEsc();renderEscSel();renderCad();renderVis();if(validados.length){renderStats();renderVal();}}
+  if(btn){btn.textContent='↺';btn.disabled=false;}
+}
+function _iniciarAutoSync(){
+  if(!GS_URL)return;
+  const btn=document.getElementById('btn-sync');
+  if(btn)btn.style.display='inline-block';
+  // atualiza do Sheets a cada 60 segundos automaticamente
+  setInterval(async()=>{
+    const ok=await carregarGS();
+    if(ok){renderEsc();renderEscSel();renderCad();renderVis();if(validados.length){renderStats();renderVal();}}
+  },60000);
+}
 // ══════════════════════════════════════════════════════════
 
 // ══ PERSIST ════════════════════════════════════════════
@@ -981,6 +1001,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
     renderEsc();renderEscSel();renderCad();renderVis();
     if(validados.length){renderStats();renderVal();}
   }
+  _iniciarAutoSync();
 });
 
 // ══ TABS ═══════════════════════════════════════════════
