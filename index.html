@@ -786,7 +786,7 @@ const LS='hc_ssp36_v4';
 
 // ══ GOOGLE SHEETS SYNC ════════════════════════════════════
 // Cole aqui a URL do Web App após publicar o Apps Script:
-const GS_URL='https://script.google.com/a/macros/mercadolivre.com/s/AKfycbwagDaHS0RxS_LVLSEVs3gfqcxuWXu1VjWRYcgbCJYfvIly9pvcObrVMpkqzlLnjPNKIQ/exec';
+const GS_URL='/api/sync';
 
 let _gsTimer=null;
 function agendarSincGS(){
@@ -810,7 +810,7 @@ async function _salvarGS(){
       escalas,logFull,diaristas,historico,
       dataGlobal:document.getElementById('data-global')?.value||''
     });
-    const r=await fetch(GS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,credentials:'include',redirect:'follow'});
+    const r=await fetch(GS_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body});
     const text=await r.text();
     let j;try{j=JSON.parse(text);}catch(e){console.error('GS resposta inesperada:',text.substring(0,300));_statusGS('error');return;}
     _statusGS(j.ok?'saved':'error');
@@ -820,7 +820,7 @@ async function carregarGS(){
   if(!GS_URL)return false;
   try{
     _statusGS('loading');
-    const r=await fetch(GS_URL+'?action=read',{credentials:'include',redirect:'follow'});
+    const r=await fetch(GS_URL+'?action=read');
     const text=await r.text();
     let j;try{j=JSON.parse(text);}catch(e){console.error('GS leitura resposta inesperada:',text.substring(0,300));return false;}
     // j já foi declarado — reusa abaixo
