@@ -1149,6 +1149,13 @@ const MOTIVOS_JUST=['Folga','Férias','Suspensão','Treinamento','Licença médi
 
 const LS='hc_ssp36_v4';
 
+// Valida se string é uma data yyyy-MM-dd válida
+function _dataValida(s){
+  if(!s||typeof s!=='string')return false;
+  const d=new Date(s+'T12:00:00');
+  return !isNaN(d.getTime())&&s.match(/^\d{4}-\d{2}-\d{2}$/);
+}
+
 // ══ GOOGLE SHEETS SYNC ════════════════════════════════════
 // Cole aqui a URL do Web App após publicar o Apps Script:
 const GS_URL='/api/sync';
@@ -1173,7 +1180,7 @@ async function _salvarGS(){
   try{
     const body=JSON.stringify({
       escalas,logFull,diaristas,historico,
-      dataGlobal:document.getElementById('data-global')?.value||''
+      dataGlobal:(()=>{const v=document.getElementById('data-global')?.value||'';return _dataValida(v)?v:new Date().toISOString().slice(0,10);})()
     });
     const r=await fetch(GS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body});
     const text=await r.text();
@@ -1197,12 +1204,15 @@ async function carregarGS(){
       if(Array.isArray(d.diaristas))diaristas=d.diaristas;
       if(Array.isArray(d.historico))historico=d.historico;
       nxEsc=escalas.reduce((m,e)=>Math.max(m,e.id),0)+1;
-      if(d.dataGlobal){
+      // Só atualiza data do GS se for válida E a data local ainda não estiver definida
+      if(_dataValida(d.dataGlobal)){
         const dg=document.getElementById('data-global');
         const rd=document.getElementById('ros-data-ref');
-        if(dg&&!dg.value)dg.value=d.dataGlobal;
-        if(rd&&!rd.value)rd.value=d.dataGlobal;
-        sincronizarData(d.dataGlobal);
+        if(!dg?.value){
+          if(dg)dg.value=d.dataGlobal;
+          if(rd)rd.value=d.dataGlobal;
+          sincronizarData(d.dataGlobal,true);
+        }
       }
       _statusGS('saved');
       return true;
@@ -1308,13 +1318,15 @@ function sincronizarData(val,forcar){
     ['data-prompt-ros','data-prompt-pre'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
   }
 
-  if(dg)dg.value=val;
+  // Garante data sempre válida — fallback para hoje se vazio ou inválido
+  const dataFinal=_dataValida(val)?val:new Date().toISOString().slice(0,10);
+  if(dg)dg.value=dataFinal;
+  const rd2=document.getElementById('ros-data-ref');
+  if(rd2&&!rd2.value)rd2.value=dataFinal;
   const dd=document.getElementById('data-display');
   if(dd){
-    if(val){
-      const d=new Date(val+'T12:00:00');
-      dd.textContent=d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
-    } else dd.textContent='—';
+    const d=new Date(dataFinal+'T12:00:00');
+    dd.textContent=d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
   }
   // re-renderiza escalas para atualizar quais estão ativas
   renderEsc();
