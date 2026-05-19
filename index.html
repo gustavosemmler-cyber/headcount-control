@@ -1,0 +1,3225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Headcount SSP36</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#0f1117;--bg2:#161b27;--bg3:#1e2535;--border:#2a3348;
+  --text:#e2e8f4;--muted:#7a8aa8;
+  --accent:#3b82f6;--a2:#60a5fa;
+  --green:#22c55e;--gbg:#0d2a1a;
+  --red:#ef4444;--rbg:#2a0d0d;
+  --amber:#f59e0b;--abg:#2a1e08;
+  --purple:#a78bfa;--pbg:#1a1030;
+  --cyan:#22d3ee;--cbg:#0a2030;
+  --teal:#2dd4bf;--tbg:#072a26;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;min-height:100vh;}
+header{border-bottom:1px solid var(--border);padding:12px 26px;display:flex;align-items:center;justify-content:space-between;background:var(--bg2);}
+.logo{display:flex;align-items:baseline;gap:9px;}
+.ltag{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--accent);padding:2px 7px;border-radius:3px;}
+.ltitle{font-size:16px;font-weight:600;letter-spacing:-.02em;}
+.lsub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:3px;}
+.hright{display:flex;align-items:center;gap:14px;}
+.hdate{font-family:var(--mono);font-size:11px;color:var(--muted);}
+.tabs{display:flex;border-bottom:1px solid var(--border);background:var(--bg2);padding:0 26px;gap:1px;overflow-x:auto;}
+.tab{padding:10px 14px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.tab:hover{color:var(--text);}.tab.active{color:var(--a2);border-bottom-color:var(--accent);}
+.tbadge{font-family:var(--mono);font-size:10px;padding:1px 5px;border-radius:3px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);}
+.tab.active .tbadge{background:var(--accent);color:#fff;border-color:var(--accent);}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 26px;}
+.panel{display:none;}.panel.active{display:block;}
+.slabel{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:15px 18px;margin-bottom:12px;}
+.ctitle{font-size:13px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.badge{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:var(--bg3);color:var(--muted);border:1px solid var(--border);}
+.row{display:flex;gap:9px;align-items:flex-end;flex-wrap:wrap;margin-bottom:11px;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;}
+input[type=text],input[type=date],input[type=month],select{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:6px 9px;font-size:12px;font-family:var(--mono);outline:none;transition:border-color .15s;}
+input:focus,select:focus{border-color:var(--accent);}
+textarea{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:9px 11px;font-size:11px;font-family:var(--mono);outline:none;transition:border-color .15s;resize:vertical;line-height:1.65;width:100%;}
+textarea:focus{border-color:var(--accent);}textarea::placeholder{color:var(--muted);}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:5px;font-size:12px;font-weight:500;cursor:pointer;border:none;transition:opacity .15s,transform .1s;font-family:var(--sans);}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--accent);color:#fff;}.btn-p:hover{opacity:.9;}
+.btn-o{background:transparent;color:var(--muted);border:1px solid var(--border);}.btn-o:hover{border-color:var(--accent);color:var(--a2);}
+.btn-d{background:transparent;color:var(--red);border:1px solid var(--rbg);}.btn-d:hover{background:var(--rbg);}
+.btn-g{background:transparent;color:var(--green);border:1px solid var(--gbg);}.btn-g:hover{background:var(--gbg);}
+.btn-sm{padding:3px 8px;font-size:11px;}
+.bgroup{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.pill{display:inline-flex;align-items:center;padding:2px 7px;border-radius:3px;font-family:var(--mono);font-size:10px;font-weight:600;white-space:nowrap;}
+.p-ft{background:var(--gbg);color:var(--green);border:1px solid #164b2a;}
+.p-pt{background:var(--tbg);color:var(--teal);border:1px solid #0d3a35;}
+.p-di{background:var(--cbg);color:var(--cyan);border:1px solid #0a3a50;}
+.p-ok{background:var(--gbg);color:var(--green);}
+.p-fa{background:var(--rbg);color:var(--red);}
+.p-so{background:var(--abg);color:var(--amber);}
+.p-dc{background:#1a0a30;color:var(--purple);border:1px solid #2d1a50;}
+.tw{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:auto;margin-bottom:11px;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:var(--bg3);}
+th{text-align:left;padding:8px 10px;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:7px 10px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr.rfa td:first-child{border-left:3px solid var(--red);}
+tr.rso td:first-child{border-left:3px solid var(--amber);}
+tr.rdc td:first-child{border-left:3px solid var(--purple);}
+.msm{font-family:var(--mono);font-size:11px;color:var(--muted);}
+/* stats */
+.srow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px;}
+.sc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:11px 13px;}
+.sl{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.sv{font-size:24px;font-weight:600;font-family:var(--mono);margin-top:2px;}
+.sv.g{color:var(--green);}.sv.r{color:var(--red);}.sv.a{color:var(--amber);}.sv.b{color:var(--a2);}.sv.p{color:var(--purple);}.sv.t{color:var(--teal);}
+/* alerts */
+.alert{display:none;align-items:flex-start;gap:9px;padding:10px 13px;border-radius:7px;margin-bottom:11px;}
+.alert.show{display:flex;}
+.aw{border:1px solid var(--amber);background:var(--abg);}
+.ai{border:1px solid var(--purple);background:var(--pbg);}
+.aico{font-size:14px;margin-top:1px;flex-shrink:0;}
+.atxt{font-size:12px;line-height:1.55;}
+.aw .atxt strong{color:var(--amber);}
+.ai .atxt strong{color:var(--purple);}
+/* filters */
+.frow{display:flex;gap:5px;margin-bottom:9px;align-items:center;flex-wrap:wrap;}
+.fb{padding:4px 10px;border-radius:4px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:11px;cursor:pointer;font-family:var(--mono);transition:all .15s;}
+.fb.active{border-color:var(--accent);color:var(--a2);background:var(--bg3);}
+.si{background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:4px 9px;font-size:11px;font-family:var(--mono);outline:none;transition:border-color .15s;margin-left:auto;}
+.si:focus{border-color:var(--accent);}
+/* dropzone */
+.dropzone{border:1px dashed var(--border);border-radius:6px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg3);}
+.dropzone:hover,.dropzone.drag{border-color:var(--accent);background:#0d1a2a;}
+.dz-icon{font-size:26px;opacity:.4;margin-bottom:7px;}
+.dz-text{font-size:12px;color:var(--muted);}
+.dz-text strong{color:var(--a2);}
+.dz-hint{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:5px;}
+.dz-status{font-family:var(--mono);font-size:11px;color:var(--green);margin-top:7px;display:none;}
+/* fatura */
+.fblock{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px;}
+.fhdr{background:var(--bg3);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.fhtitle{font-size:13px;font-weight:600;}
+.fr{display:flex;align-items:center;justify-content:space-between;padding:8px 15px;border-bottom:1px solid var(--border);}
+.fr:last-child{border-bottom:none;}
+.fk{font-size:12px;color:var(--muted);}
+.fv{font-family:var(--mono);font-size:13px;font-weight:600;}
+.ftotal{background:var(--bg3);}
+.cbox{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:12px;font-family:var(--mono);font-size:11px;color:var(--text);white-space:pre-wrap;line-height:1.65;margin-top:9px;}
+/* scheduling grid */
+.esc-item{display:flex;align-items:center;gap:9px;padding:8px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;}
+.esc-type-sel{background:var(--bg2);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:4px 7px;font-size:11px;font-family:var(--mono);outline:none;}
+.qrow{display:flex;align-items:center;gap:6px;}
+.qb{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:var(--mono);}
+.qb:hover{border-color:var(--accent);color:var(--accent);}
+.qv{font-family:var(--mono);font-size:15px;font-weight:600;width:28px;text-align:center;}
+.tbar{display:flex;align-items:center;gap:11px;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin-top:7px;}
+.tlab{font-size:12px;color:var(--muted);flex:1;}
+.tval{font-family:var(--mono);font-size:18px;font-weight:600;}
+.tval.ok{color:var(--green);}.tval.ov{color:var(--amber);}
+/* af */
+.af{display:flex;gap:7px;align-items:flex-end;flex-wrap:wrap;padding:10px;background:var(--bg3);border-radius:6px;margin-bottom:9px;}
+.af .field{flex:1;min-width:120px;}
+.af .field input,.af .field select{width:100%;}
+/* itabs */
+.itabs{display:flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:11px;}
+.itab{flex:1;padding:8px 11px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;background:var(--bg2);border-right:1px solid var(--border);text-align:center;transition:all .15s;}
+.itab:last-child{border-right:none;}
+.itab.active{background:var(--bg3);color:var(--text);}
+.hint{font-size:10px;color:var(--muted);margin-top:5px;font-family:var(--mono);}
+/* histórico */
+.hist-day{background:var(--bg2);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+.hist-hdr{padding:10px 14px;display:flex;align-items:center;gap:9px;cursor:pointer;transition:background .15s;}
+.hist-hdr:hover{background:var(--bg3);}
+.hist-date{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--a2);}
+.hist-esc{font-size:12px;color:var(--muted);flex:1;}
+.hist-stats{display:flex;gap:8px;}
+.hstat{font-family:var(--mono);font-size:11px;}
+.hist-body{display:none;padding:12px 14px;border-top:1px solid var(--border);font-family:var(--mono);font-size:11px;white-space:pre-wrap;line-height:1.65;color:var(--muted);}
+.hist-body.open{display:block;}
+/* consolidado */
+.mes-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:10px;}
+.mes-hdr{background:var(--bg3);padding:10px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
+.mes-grid{display:grid;grid-template-columns:repeat(5,1fr);}
+.mes-cell{padding:10px 12px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);}
+.mes-cell:nth-child(5n){border-right:none;}
+.mc-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;}
+.mc-val{font-family:var(--mono);font-size:20px;font-weight:600;margin-top:2px;}
+/* visualização diária */
+.vis-section{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;}
+.vis-sec-hdr{background:var(--bg3);padding:10px 15px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.vis-sec-title{font-size:12px;font-weight:600;}
+.vis-sec-badge{font-family:var(--mono);font-size:11px;}
+.vis-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.vis-cell{padding:12px 15px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+.vis-cell:nth-child(3n){border-right:none;}
+.vis-cell:nth-last-child(-n+3){border-bottom:none;}
+.vis-cell-label{font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;}
+.vis-cell-val{font-family:var(--mono);font-size:22px;font-weight:600;}
+.vis-meli{background:var(--bg3);padding:12px 15px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.vis-meli-label{font-size:12px;color:var(--muted);}
+.vis-meli-val{font-family:var(--mono);font-size:16px;font-weight:600;}
+.alloc-row{display:flex;align-items:center;gap:8px;padding:8px 15px;border-bottom:1px solid var(--border);font-size:12px;}
+.alloc-row:last-child{border-bottom:none;}
+.alloc-label{flex:1;color:var(--muted);}
+.alloc-val{font-family:var(--mono);font-size:13px;font-weight:600;}
+.alloc-resp{font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;}
+.resp-3pl{background:#2a1508;color:#fb923c;border:1px solid #3a2008;}
+.resp-meli{background:var(--gbg);color:var(--green);border:1px solid #164b2a;}
+/* empty */
+.empty{text-align:center;padding:34px 20px;color:var(--muted);}
+.empty-i{font-size:26px;margin-bottom:6px;opacity:.4;}
+.empty-t{font-size:11px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="ltag">HC</span>
+    <span class="ltitle">Headcount Control</span>
+    <span class="lsub">/ SSP36</span>
+  </div>
+  <div class="hright">
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px;">
+      <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;">Data de referência</div>
+      <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent2)" id="data-display">—</div>
+      <div style="font-size:10px;color:var(--muted);font-family:var(--mono)">Altere na aba Importar</div>
+    </div>
+    <!-- campo oculto mantido para compatibilidade com funções que leem data-global -->
+    <input type="date" id="data-global" style="display:none" oninput="gerarTexto()">
+    <div class="hdate" id="hdate"></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" id="tab-sch" onclick="showTab('sch')">Scheduling</div>
+  <div class="tab" id="tab-cad" onclick="showTab('cad')">Cadastro <span class="tbadge" id="b-cad">0</span></div>
+  <div class="tab" id="tab-imp" onclick="showTab('imp')">Importar</div>
+  <div class="tab" id="tab-val" onclick="showTab('val')">Validação <span class="tbadge" id="b-val">0</span></div>
+  <div class="tab" id="tab-fat" onclick="showTab('fat')">Fatura</div>
+  <div class="tab" id="tab-vis" onclick="showTab('vis')">Visualização <span class="tbadge" id="b-hist">0</span></div>
+</div>
+
+<!-- ═══ SCHEDULING ═══ -->
+<div class="panel active" id="panel-sch"><div class="wrap">
+  <div class="slabel">Escalas do mês</div>
+  <div class="card">
+    <div class="ctitle">Configuração mensal
+      <span class="badge">Quadro do dia: <span id="quadro-dia">—</span></span>
+      <span class="badge" id="badge-data-sch" style="color:var(--accent2)"></span>
+    </div>
+    <div class="row">
+      <div class="field"><label>Mês de referência</label><input type="month" id="mes-ref"></div>
+      <button class="btn btn-o" onclick="addEscala()">+ Nova escala</button>
+    </div>
+    <div id="esc-grid" style="display:flex;flex-direction:column;gap:6px;"></div>
+    <div class="tbar">
+      <div class="tlab">Total ativo no dia de referência</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">Soma das escalas com vigência ativa</div>
+      <div class="tval" id="tval">0</div>
+    </div>
+  </div>
+  <div class="bgroup">
+    <button class="btn btn-p" onclick="showTab('cad')">Próximo → Cadastro</button>
+    <button class="btn btn-o" onclick="testarDSR()">🔍 Testar DSR</button>
+  </div>
+</div></div>
+
+<!-- ═══ CADASTRO ═══ -->
+<div class="panel" id="panel-cad"><div class="wrap">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+    <div>
+      <div class="slabel">Colaboradores fixos — Log Full (FT / PT)</div>
+      <div class="card">
+        <div class="af">
+          <div class="field"><label>Nome</label><input type="text" id="lf-n" placeholder="Nome Sobrenome"></div>
+          <div class="field" style="min-width:80px"><label>ID Groot</label><input type="text" id="lf-g" placeholder="1234"></div>
+          <div class="field" style="min-width:100px"><label>LDPA</label><input type="text" id="lf-l" placeholder="ext_usuario"></div>
+          <div class="field" style="min-width:70px"><label>Tipo</label>
+            <select id="lf-t"><option value="FT">Full Time</option><option value="PT">Part Time</option></select>
+          </div>
+          <div class="field" style="min-width:100px"><label>Escala</label><select id="lf-e"><option value="">—</option></select></div>
+          <button class="btn btn-p btn-sm" onclick="addLF()" style="margin-top:17px">+</button>
+        </div>
+        <div class="card" style="padding:10px 13px;margin-bottom:9px;">
+          <div class="ctitle" style="margin-bottom:6px;font-size:12px;">Importar CSV</div>
+          <div class="dropzone" id="dz-lf" onclick="document.getElementById('f-lf').click()" ondragover="dzDrag(event,'lf')" ondragleave="dzLeave('lf')" ondrop="dzDrop(event,'lf')">
+            <div class="dz-icon">📄</div>
+            <div class="dz-text"><strong>Clique</strong> ou arraste o CSV</div>
+            <div class="dz-hint">// Aceita .csv ou .txt — separadores: ; , tab ou |</div>
+          </div>
+          <div class="dz-status" id="dzs-lf"></div>
+          <input type="file" id="f-lf" accept=".csv,.txt" style="display:none" onchange="lerCSV(event,'lf')">
+          <div style="margin-top:8px;padding:9px 11px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:600;margin-bottom:5px;">Formato esperado</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;">
+              <div style="color:var(--muted);">Col 1 (obrig.): <span style="color:var(--text)">Nome completo</span></div>
+              <div>Col 2 (opcio.): <span style="color:var(--text)">ID Groot</span> — ex: 2342127</div>
+              <div>Col 3 (opcio.): <span style="color:var(--text)">LDPA</span> — ex: ext_henlobo</div>
+              <div>Col 4 (opcio.): <span style="color:var(--text)">Tipo</span> — Full Time ou Part Time</div>
+              <div style="margin-top:5px;color:var(--accent2);">Formato HCM (mesmo arquivo do rostering):</div>
+              <div style="background:var(--bg2);padding:5px 8px;border-radius:4px;border:1px solid var(--border);margin-top:3px;">ID&nbsp;&nbsp;Colaborador&nbsp;&nbsp;LDAP&nbsp;&nbsp;Tipo&nbsp;&nbsp;Turno&nbsp;&nbsp;Escala<br>2342127&nbsp;&nbsp;Henrique Lobo Chagas&nbsp;&nbsp;ext_henlobo&nbsp;&nbsp;Full Time&nbsp;&nbsp;AM&nbsp;&nbsp;Escala B</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:7px;display:flex;gap:6px;align-items:center;">
+          <span class="pill p-ft">FT</span><span class="pill p-pt">PT</span>
+          <span id="cnt-lf" class="msm">0</span>
+          <input class="si" type="text" placeholder="buscar..." id="s-lf" oninput="renderCad()" style="width:120px;">
+          <button class="btn btn-d btn-sm" onclick="limparCadastro('lf')" title="Apagar todos os colaboradores">Limpar tudo</button>
+        </div>
+        <div class="tw" style="max-height:260px;overflow-y:auto;">
+          <table><thead><tr><th>Nome</th><th>ID Groot</th><th>LDPA</th><th>Tipo</th><th>Escala</th><th></th></tr></thead><tbody id="tb-lf"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="slabel">Diaristas conhecidos</div>
+      <div class="card">
+        <div class="af">
+          <div class="field"><label>Nome</label><input type="text" id="di-n" placeholder="Nome Sobrenome"></div>
+          <div class="field" style="min-width:80px"><label>ID Groot</label><input type="text" id="di-g" placeholder="1234"></div>
+          <div class="field" style="min-width:100px"><label>LDPA</label><input type="text" id="di-l" placeholder="ext_usuario"></div>
+          <button class="btn btn-p btn-sm" onclick="addDI()" style="margin-top:17px">+</button>
+        </div>
+        <div class="card" style="padding:10px 13px;margin-bottom:9px;">
+          <div class="ctitle" style="margin-bottom:6px;font-size:12px;">Importar CSV</div>
+          <div class="dropzone" id="dz-di" onclick="document.getElementById('f-di').click()" ondragover="dzDrag(event,'di')" ondragleave="dzLeave('di')" ondrop="dzDrop(event,'di')">
+            <div class="dz-icon">📄</div>
+            <div class="dz-text"><strong>Clique</strong> ou arraste o CSV</div>
+            <div class="dz-hint">// Aceita .csv ou .txt — separadores: ; , tab ou |</div>
+          </div>
+          <div class="dz-status" id="dzs-di"></div>
+          <input type="file" id="f-di" accept=".csv,.txt" style="display:none" onchange="lerCSV(event,'di')">
+          <div style="margin-top:8px;padding:9px 11px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);">
+            <div style="font-size:11px;font-weight:600;margin-bottom:5px;">Formato esperado</div>
+            <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;">
+              <div>Col 1 (obrig.): <span style="color:var(--text)">Nome completo</span></div>
+              <div>Col 2 (opcio.): <span style="color:var(--text)">ID Groot</span> — ex: 2342127</div>
+              <div>Col 3 (opcio.): <span style="color:var(--text)">LDPA</span> — ex: ext_henlobo</div>
+              <div style="margin-top:5px;color:var(--accent2);">Mesmo formato HCM:</div>
+              <div style="background:var(--bg2);padding:5px 8px;border-radius:4px;border:1px solid var(--border);margin-top:3px;">ID&nbsp;&nbsp;Colaborador&nbsp;&nbsp;LDAP&nbsp;&nbsp;Tipo&nbsp;&nbsp;Turno&nbsp;&nbsp;Escala<br>2460970&nbsp;&nbsp;Ana Pereira&nbsp;&nbsp;ext_anaper&nbsp;&nbsp;Full Time&nbsp;&nbsp;AM&nbsp;&nbsp;Escala B</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:7px;display:flex;gap:6px;align-items:center;">
+          <span class="pill p-di">DIARISTA</span>
+          <span id="cnt-di" class="msm">0</span>
+          <input class="si" type="text" placeholder="buscar..." id="s-di" oninput="renderCad()" style="width:120px;">
+          <button class="btn btn-d btn-sm" onclick="limparCadastro('di')" title="Apagar todos os diaristas">Limpar tudo</button>
+        </div>
+        <div class="tw" style="max-height:260px;overflow-y:auto;">
+          <table><thead><tr><th>Nome</th><th>ID Groot</th><th>LDPA</th><th></th></tr></thead><tbody id="tb-di"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bgroup">
+    <button class="btn btn-p" onclick="showTab('imp')">Próximo → Importar dados</button>
+    <button class="btn btn-o" onclick="exportarCadastroCSV('lf')">Exportar Log Full CSV</button>
+    <button class="btn btn-o" onclick="exportarCadastroCSV('di')">Exportar Diaristas CSV</button>
+  </div>
+</div></div>
+
+<!-- ═══ IMPORTAR ═══ -->
+<div class="panel" id="panel-imp"><div class="wrap">
+  <div class="itabs">
+    <div class="itab active" id="it-ros" onclick="showIT('ros')">1 — Rostering (HCM)</div>
+    <div class="itab" id="it-pre" onclick="showIT('pre')">2 — Presenças (LMS)</div>
+  </div>
+
+  <!-- ROSTERING -->
+  <div id="ip-ros">
+    <div class="slabel">Rostering do dia — exportado do HCM</div>
+    <div class="card">
+      <div class="row">
+        <div class="field">
+          <label>1. Selecione a escala</label>
+          <select id="esc-dia" style="min-width:220px;" onchange="atualizarDicaEscala()">
+            <option value="">— Selecione a escala —</option>
+          </select>
+          <div id="dica-escala" style="font-size:10px;color:var(--amber);font-family:var(--mono);margin-top:3px;display:none;">⚠ Selecione a escala antes de adicionar o arquivo</div>
+        </div>
+        <div class="field">
+          <label>Data a justificar</label>
+          <input type="date" id="ros-data-ref" style="min-width:150px;" oninput="sincronizarData(this.value)">
+          <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:3px;">// Esta data é usada em todo o sistema</div>
+        </div>
+      </div>
+
+      <!-- dropzone multi-arquivo -->
+      <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-bottom:5px;">2. Adicione o arquivo desta escala</div>
+      <div class="dropzone" id="dz-ros"
+        onclick="verificarEscalaAntes('ros')"
+        ondragover="dzDrag(event,'ros')" ondragleave="dzLeave('ros')" ondrop="dzDropMulti(event,'ros')">
+        <div class="dz-icon">📋</div>
+        <div class="dz-text"><strong>Clique</strong> ou arraste um ou mais arquivos do HCM</div>
+        <div class="dz-hint">// Aceita .xlsx, .csv ou .txt — vários arquivos são mesclados automaticamente</div>
+      </div>
+      <input type="file" id="f-ros" accept=".csv,.txt,.xlsx,.xls" multiple style="display:none" onchange="lerArqMulti(event,'ros')">
+
+      <!-- lista de arquivos carregados -->
+      <div id="files-ros" style="display:none;margin-top:10px;">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;">Arquivos carregados</div>
+        <div id="files-ros-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+        <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div id="ros-total" style="font-family:var(--mono);font-size:11px;color:var(--green);"></div>
+          <button class="btn btn-d btn-sm" onclick="limparArquivos('ros')">Limpar todos</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;margin-bottom:5px;">Formato esperado (exportação direta do HCM)</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;">
+          <div style="background:var(--bg2);padding:5px 9px;border-radius:4px;border:1px solid var(--border);margin-bottom:5px;">
+            ID&nbsp;&nbsp;Colaborador&nbsp;&nbsp;Tax id&nbsp;&nbsp;LDAP&nbsp;&nbsp;Estado&nbsp;&nbsp;Data início&nbsp;&nbsp;Data término<br>
+            2342127&nbsp;&nbsp;Henrique Lobo Chagas&nbsp;&nbsp;...&nbsp;&nbsp;ext_henlobo&nbsp;&nbsp;<span style="color:var(--green)">TRABALHANDO</span>&nbsp;&nbsp;01/05/2026&nbsp;&nbsp;31/05/2026
+          </div>
+          <div>// Filtra: Data início ≤ <strong style="color:var(--text)">data a justificar</strong> ≤ Data término</div>
+        </div>
+      </div>
+    </div>
+    <div class="bgroup">
+      <button class="btn btn-p" onclick="confirmarRostering()">Confirmar rostering →</button>
+      <button class="btn btn-o" onclick="showIT('pre')">Pular para presenças</button>
+    </div>
+  </div>
+
+  <!-- PRESENÇA -->
+  <div id="ip-pre" style="display:none;">
+    <div class="slabel">LMS — presenças do dia</div>
+    <div class="card">
+      <div class="dropzone" id="dz-pre"
+        onclick="document.getElementById('f-pre').click()"
+        ondragover="dzDrag(event,'pre')" ondragleave="dzLeave('pre')" ondrop="dzDropMulti(event,'pre')">
+        <div class="dz-icon">✅</div>
+        <div class="dz-text"><strong>Clique</strong> ou arraste um ou mais arquivos de presença</div>
+        <div class="dz-hint">// Aceita .xlsx, .csv ou .txt — vários arquivos são mesclados automaticamente</div>
+      </div>
+      <input type="file" id="f-pre" accept=".csv,.txt,.xlsx,.xls" multiple style="display:none" onchange="lerArqMulti(event,'pre')">
+
+      <!-- lista de arquivos carregados -->
+      <div id="files-pre" style="display:none;margin-top:10px;">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.07em;">Arquivos carregados</div>
+        <div id="files-pre-list" style="display:flex;flex-direction:column;gap:5px;"></div>
+        <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div id="pre-total" style="font-family:var(--mono);font-size:11px;color:var(--green);"></div>
+          <button class="btn btn-d btn-sm" onclick="limparArquivos('pre')">Limpar todos</button>
+        </div>
+      </div>
+
+      <div style="margin-top:10px;padding:10px 12px;background:var(--bg3);border-radius:6px;border:1px solid var(--border);">
+        <div style="font-size:11px;font-weight:600;margin-bottom:5px;">Formato esperado</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.7;">
+          <div style="background:var(--bg2);padding:5px 9px;border-radius:4px;border:1px solid var(--border);margin-bottom:5px;">
+            DATA,HORA DE ENTRADA,SVC,<span style="color:var(--green)">GROOT ID</span>,<span style="color:var(--green)">USER EXT</span>,Operador<br>
+            14/05/2026,3,SSP36,1776100,ext_rodrigpr,rep
+          </div>
+          <div>// Cruzamento usa <strong style="color:var(--text)">GROOT ID</strong> e <strong style="color:var(--text)">USER EXT</strong> como identificadores primários.</div>
+          <div>// Nome não é obrigatório — o sistema localiza pelo ID mesmo sem nome.</div>
+          <div>// Pode conter mais pessoas do que o rostering — o sistema detecta automaticamente.</div>
+        </div>
+      </div>
+    </div>
+    <div class="bgroup">
+      <button class="btn btn-p" onclick="confirmarPresenca()">Confirmar presenças →</button>
+    </div>
+  </div>
+
+  <!-- STATUS GERAL -->
+  <div id="imp-status" style="display:none;margin-top:14px;padding:12px 15px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;">
+    <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Status da importação</div>
+    <div style="display:flex;gap:20px;flex-wrap:wrap;">
+      <div><span style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;">Rostering</span><br><span id="imp-st-ros" style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted)">—</span></div>
+      <div><span style="font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;">Presenças</span><br><span id="imp-st-pre" style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--muted)">—</span></div>
+    </div>
+    <div class="bgroup" style="margin-top:10px;">
+      <button class="btn btn-p" onclick="cruzar()">Cruzar e validar →</button>
+      <button class="btn btn-o" onclick="resetImport()">Limpar tudo e recomeçar</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- ═══ VALIDAÇÃO ═══ -->
+<div class="panel" id="panel-val"><div class="wrap">
+  <div class="slabel">Validação — rostering × LMS × cadastro</div>
+
+  <!-- GERAL -->
+  <div class="srow">
+    <div class="sc"><div class="sl">Rosterizados</div><div class="sv b" id="sv-ros">—</div></div>
+    <div class="sc"><div class="sl">Confirmados</div><div class="sv g" id="sv-conf">—</div></div>
+    <div class="sc"><div class="sl">Faltas (ABS)</div><div class="sv r" id="sv-abs">—</div></div>
+    <div class="sc"><div class="sl">Só no LMS</div><div class="sv a" id="sv-soro">—</div></div>
+    <div class="sc"><div class="sl">Sem cadastro</div><div class="sv p" id="sv-dc">—</div></div>
+  </div>
+  <div class="alert aw" id="al-gap"><div class="aico">⚠</div><div class="atxt" id="al-gap-t"></div></div>
+  <div class="alert ai" id="al-dc"><div class="aico">❓</div><div class="atxt" id="al-dc-t"></div></div>
+
+  <!-- POR ESCALA -->
+  <details style="margin-bottom:12px;" id="val-por-escala-wrap">
+    <summary style="cursor:pointer;padding:9px 13px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;font-size:12px;font-weight:500;color:var(--muted);list-style:none;display:flex;align-items:center;gap:7px;">
+      <span style="font-family:var(--mono);font-size:12px;">▶</span> Ver validação por escala
+    </summary>
+    <div id="val-por-escala" style="border:1px solid var(--border);border-top:none;border-radius:0 0 7px 7px;background:var(--bg2);padding:12px 14px;">
+      <div class="empty"><div class="empty-t">Processe os dados para ver por escala.</div></div>
+    </div>
+  </details>
+
+  <!-- TABELA GERAL -->
+  <div class="slabel">Lista de pessoas</div>
+  <div class="frow">
+    <button class="fb active" onclick="setF('todos',this)">Todos</button>
+    <button class="fb" onclick="setF('confirmado',this)">Confirmados</button>
+    <button class="fb" onclick="setF('falta',this)">Faltas</button>
+    <button class="fb" onclick="setF('dsr',this)" id="fb-dsr" style="display:none">DSR <span id="cnt-dsr"></span></button>
+    <button class="fb" onclick="setF('justificado',this)" id="fb-just" style="display:none">✦ Justificados <span id="cnt-just"></span></button>
+    <button class="fb" onclick="setF('soro',this)">Só no LMS</button>
+    <button class="fb" onclick="setF('pendente',this)" id="fb-pendente" style="display:none">⚠ Roster pendente <span id="cnt-pendente"></span></button>
+    <button class="fb" onclick="setF('escalaErrada',this)" id="fb-esc-errada" style="display:none">🔀 Escala divergente <span id="cnt-esc-errada"></span></button>
+    <button class="fb" onclick="setF('desconhecido',this)">Sem cadastro</button>
+    <input class="si" type="text" id="s-val" placeholder="buscar nome / LDPA..." oninput="renderVal()" style="width:180px;">
+  </div>
+  <div class="tw">
+    <table>
+      <thead><tr><th>Nome</th><th>ID Groot</th><th>LDPA</th><th>Tipo</th><th>Escala</th><th>Situação</th><th>Ação</th></tr></thead>
+      <tbody id="tb-val"></tbody>
+    </table>
+  </div>
+  <div class="bgroup">
+    <button class="btn btn-p" onclick="showTab('fat')">Gerar fatura →</button>
+    <button class="btn btn-o" onclick="showTab('imp')">← Reimportar</button>
+  </div>
+</div></div>
+
+<!-- ═══ FATURA ═══ -->
+<div class="panel" id="panel-fat"><div class="wrap">
+  <div class="slabel">Lançamento de fatura — Regras MELI</div>
+
+  <!-- BLOCO 1: HC PRESENTE NO DIA -->
+  <div class="fblock">
+    <div class="fhdr">
+      <div class="fhtitle">Headcount presente no dia</div>
+      <div class="msm" id="fat-dt">—</div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);">
+      <div style="padding:14px 16px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Full Time presentes</div>
+        <div style="font-family:var(--mono);font-size:32px;font-weight:600;color:var(--green)" id="fat-pres-ft">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">de <span id="fat-ros-ft2">—</span> rosterizados</div>
+      </div>
+      <div style="padding:14px 16px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Part Time presentes</div>
+        <div style="font-family:var(--mono);font-size:32px;font-weight:600;color:var(--teal)" id="fat-pres-pt">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">de <span id="fat-ros-pt2">—</span> rosterizados</div>
+      </div>
+      <div style="padding:14px 16px;text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Diaristas (LMS)</div>
+        <div style="font-family:var(--mono);font-size:32px;font-weight:600;color:var(--cyan)" id="fat-di-tc2">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:4px;">presentes no LMS</div>
+      </div>
+    </div>
+    <!-- ABS e Gap em linha -->
+    <div style="display:flex;border-top:1px solid var(--border);">
+      <div style="flex:1;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;border-right:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--muted)">ABS FT</span>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--red)" id="fat-abs-ft2">—</span>
+      </div>
+      <div style="flex:1;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;border-right:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--muted)">Gap quadro FT</span>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--amber)" id="fat-gap-ft2">—</span>
+      </div>
+      <div style="flex:1;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;border-right:1px solid var(--border);">
+        <span style="font-size:12px;color:var(--muted)">ABS PT</span>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--red)" id="fat-abs-pt2">—</span>
+      </div>
+      <div style="flex:1;padding:9px 16px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:12px;color:var(--muted)">Gap quadro PT</span>
+        <span style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--amber)" id="fat-gap-pt2">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOCO DSR DO DIA -->
+  <div class="fblock" id="fat-dsr-block" style="display:none;">
+    <div class="fhdr">
+      <div class="fhtitle">DSR do dia — folgas programadas</div>
+      <div class="msm" id="fat-dsr-label">—</div>
+    </div>
+    <div id="fat-dsr-content"></div>
+  </div>
+
+  <!-- BLOCO RESUMO PARA LANÇAMENTO -->
+  <div class="fblock" id="fat-resumo-block">
+    <div class="fhdr">
+      <div class="fhtitle">Resumo para lançamento</div>
+      <button class="btn btn-o btn-sm" onclick="copiarResumoFatura()" id="btn-copy-fat-resumo">Copiar resumo</button>
+    </div>
+
+    <!-- FT -->
+    <div id="fat-resumo-ft" style="border-bottom:1px solid var(--border);">
+      <!-- preenchido dinamicamente -->
+    </div>
+
+    <!-- PT -->
+    <div id="fat-resumo-pt" style="border-bottom:1px solid var(--border);">
+      <!-- preenchido dinamicamente -->
+    </div>
+
+    <!-- Diaristas -->
+    <div id="fat-resumo-di" style="border-bottom:1px solid var(--border);">
+      <!-- preenchido dinamicamente -->
+    </div>
+
+    <!-- Total -->
+    <div id="fat-resumo-total" style="background:var(--bg3);">
+      <!-- preenchido dinamicamente -->
+    </div>
+  </div>
+
+  <!-- BLOCO CAP ABS -->
+  <div class="fblock" id="fat-cap-block">
+    <div class="fhdr"><div class="fhtitle">CAP de ABS — responsabilidade MELI</div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+      <div style="padding:12px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">% ABS do dia</div>
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:var(--amber)" id="fat-pct-abs">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">ABS / Qty MELI × 100</div>
+      </div>
+      <div style="padding:12px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">CAP MELI</div>
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:var(--accent2)" id="fat-cap-pct">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">% que MELI paga</div>
+      </div>
+      <div style="padding:12px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Diaristas MELI paga</div>
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:var(--green)" id="fat-abs-meli-qty">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">CAP% × Qty MELI</div>
+      </div>
+      <div style="padding:12px 14px;text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Diaristas 3PL paga</div>
+        <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:var(--red)" id="fat-abs-3pl-qty">—</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">ABS − parte MELI</div>
+      </div>
+    </div>
+    <div style="padding:9px 15px;border-top:1px solid var(--border);background:var(--bg3);" id="fat-cap-tabela">
+      <!-- tabela de faixas preenchida dinamicamente -->
+    </div>
+  </div>
+
+  <!-- BLOCO 2: DESTINO DOS DIARISTAS -->
+  <div class="fblock">
+    <div class="fhdr"><div class="fhtitle">Destino dos diaristas chamados</div><div class="msm" id="fat-di-total-label">LMS: — diarista(s)</div></div>
+    <!-- barra visual de alocação -->
+    <div style="padding:14px 16px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;border-radius:5px;overflow:hidden;height:28px;font-size:11px;font-family:var(--mono);font-weight:600;" id="fat-bar-di">
+        <div id="bar-gap-ft" style="background:#2a1e08;color:var(--amber);display:flex;align-items:center;justify-content:center;transition:flex .3s;white-space:nowrap;overflow:hidden;"></div>
+        <div id="bar-gap-pt" style="background:#0a2030;color:var(--teal);display:flex;align-items:center;justify-content:center;transition:flex .3s;white-space:nowrap;overflow:hidden;"></div>
+        <div id="bar-abs-ft" style="background:#2a0d0d;color:var(--red);display:flex;align-items:center;justify-content:center;transition:flex .3s;white-space:nowrap;overflow:hidden;"></div>
+        <div id="bar-abs-pt" style="background:#1a0d0d;color:#f87171;display:flex;align-items:center;justify-content:center;transition:flex .3s;white-space:nowrap;overflow:hidden;"></div>
+        <div id="bar-fat" style="background:var(--gbg);color:var(--green);display:flex;align-items:center;justify-content:center;transition:flex .3s;white-space:nowrap;overflow:hidden;"></div>
+      </div>
+    </div>
+    <!-- linhas de detalhe -->
+    <div id="fat-di-rows"></div>
+    <div class="fr" style="background:var(--bg3);">
+      <div class="fk" style="color:var(--muted)">Sem cadastro — verificar</div>
+      <div class="fv p" id="fat-dc">—</div>
+    </div>
+  </div>
+
+  <!-- BLOCO 3: TOTAIS MELI -->
+  <div class="fblock">
+    <div class="fhdr"><div class="fhtitle">Total MELI aprovado para faturar</div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);">
+      <div style="padding:14px 16px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Full Time</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:600;color:var(--green)" id="fat-tot-ft">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">Qty MELI FT</div>
+      </div>
+      <div style="padding:14px 16px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Part Time</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:600;color:var(--teal)" id="fat-tot-pt">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">Qty MELI PT</div>
+      </div>
+      <div style="padding:14px 16px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Diaristas</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:600;color:var(--cyan)" id="fat-tot-di">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">excedente faturável</div>
+      </div>
+      <div style="padding:14px 16px;text-align:center;background:var(--bg3);">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Total geral</div>
+        <div style="font-family:var(--mono);font-size:36px;font-weight:600;color:var(--green)" id="fat-tot-geral">—</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px;">pessoas/dia</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detalhamento MELI (colapsável) -->
+  <details style="margin-bottom:12px;">
+    <summary style="cursor:pointer;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:500;color:var(--muted);list-style:none;display:flex;align-items:center;gap:7px;">
+      <span style="font-family:var(--mono);font-size:12px;">▶</span> Ver cálculo MELI detalhado
+    </summary>
+    <div style="border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;background:var(--bg2);">
+      <div class="fr"><div class="fk">Scheduling FT</div><div class="fv b" id="fat-sched-ft">—</div></div>
+      <div class="fr"><div class="fk">Rostering FT</div><div class="fv b" id="fat-ros-ft">—</div></div>
+      <div class="fr"><div class="fk">Qty MELI FT = min(Sched, Roster)</div><div class="fv g" id="fat-meli-ft">—</div></div>
+      <div class="fr"><div class="fk">ABS FT</div><div class="fv r" id="fat-abs-ft">—</div></div>
+      <div class="fr"><div class="fk">Gap FT</div><div class="fv a" id="fat-gap-ft">—</div></div>
+      <div class="fr" style="border-top:1px solid var(--border)"><div class="fk">Scheduling PT</div><div class="fv b" id="fat-sched-pt">—</div></div>
+      <div class="fr"><div class="fk">Rostering PT</div><div class="fv b" id="fat-ros-pt">—</div></div>
+      <div class="fr"><div class="fk">Qty MELI PT = min(Sched, Roster)</div><div class="fv t" id="fat-meli-pt">—</div></div>
+      <div class="fr"><div class="fk">ABS PT</div><div class="fv r" id="fat-abs-pt">—</div></div>
+      <div class="fr"><div class="fk">Gap PT</div><div class="fv a" id="fat-gap-pt">—</div></div>
+      <div class="fr" style="border-top:1px solid var(--border)"><div class="fk">Diaristas LMS</div><div class="fv b" id="fat-di-tc">—</div></div>
+      <div class="fr"><div class="fk">→ Cobertura Gap FT <span style="font-size:10px;color:var(--muted)">(fat. como FT — resp. 3PL)</span></div><div class="fv a" id="fat-di-gft">—</div></div>
+      <div class="fr"><div class="fk">→ Cobertura Gap PT <span style="font-size:10px;color:var(--muted)">(fat. como PT — resp. 3PL)</span></div><div class="fv a" id="fat-di-gpt">—</div></div>
+      <div class="fr"><div class="fk">→ Cobertura ABS FT <span style="font-size:10px;color:var(--muted)">(resp. 3PL)</span></div><div class="fv r" id="fat-di-aft">—</div></div>
+      <div class="fr"><div class="fk">→ Cobertura ABS PT <span style="font-size:10px;color:var(--muted)">(resp. 3PL)</span></div><div class="fv r" id="fat-di-apt">—</div></div>
+      <div class="fr"><div class="fk">→ Diaristas faturáveis (excedente)</div><div class="fv g" id="fat-di-fat">—</div></div>
+    </div>
+  </details>
+
+  <!-- Detalhamento por escala -->
+  <details style="margin-bottom:12px;">
+    <summary style="cursor:pointer;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:500;color:var(--muted);list-style:none;display:flex;align-items:center;gap:7px;">
+      <span style="font-family:var(--mono);font-size:12px;">▶</span> Ver detalhamento por escala
+    </summary>
+    <div id="fat-por-escala" style="border:1px solid var(--border);border-top:none;border-radius:0 0 8px 8px;background:var(--bg2);padding:14px 16px;">
+      <div class="empty"><div class="empty-t">Processe os dados primeiro.</div></div>
+    </div>
+  </details>
+
+  <div class="card">
+    <div class="ctitle">Observações do dia</div>
+    <textarea id="obs" placeholder="Ocorrências, trocas, autorizações..." style="min-height:55px;" oninput="gerarTexto()"></textarea>
+  </div>
+  <div class="card">
+    <div class="ctitle">Texto para lançamento</div>
+    <div class="cbox" id="cbox">Processe os dados primeiro.</div>
+    <div class="bgroup">
+      <button class="btn btn-p" onclick="copiar()">Copiar texto</button>
+      <button class="btn btn-g" onclick="salvarDia()">Salvar no histórico</button>
+      <button class="btn btn-o" onclick="showTab('vis')">Ver visualização →</button>
+      <button class="btn btn-o" onclick="novoLanc()">Novo lançamento</button>
+    </div>
+  </div>
+</div></div>
+
+<!-- ═══ VISUALIZAÇÃO ═══ -->
+<div class="panel" id="panel-vis"><div class="wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+    <div class="slabel" style="margin:0">Visualização</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+      <div class="field" style="margin:0">
+        <label>Dia específico</label>
+        <input type="date" id="hist-dia" oninput="onVisDiaChange()" style="min-width:150px;">
+      </div>
+      <div class="field" style="margin:0">
+        <label>Mês</label>
+        <input type="month" id="hist-mes" oninput="onVisMesChange()">
+      </div>
+      <button class="btn btn-o btn-sm" onclick="exportarHistCSV()" style="align-self:flex-end">Exportar CSV</button>
+      <button class="btn btn-o btn-sm" onclick="document.getElementById('f-hist-imp').click()" style="align-self:flex-end">Importar CSV</button>
+      <input type="file" id="f-hist-imp" accept=".csv,.txt" style="display:none" onchange="importarHistCSV(event)">
+      <button class="btn btn-d btn-sm" onclick="limparHist()" style="align-self:flex-end">Limpar tudo</button>
+    </div>
+  </div>
+
+  <!-- Dia atual (dados em memória) -->
+  <div id="vis-atual" style="display:none;margin-bottom:16px;">
+    <div class="slabel">Dia atual — dados em memória</div>
+    <div id="vis-content"></div>
+  </div>
+
+  <!-- Consolidado mensal -->
+  <div id="consolidado-wrap" style="display:none;margin-bottom:16px;">
+    <div class="slabel">Consolidado mensal</div>
+    <div class="mes-card">
+      <div class="mes-hdr"><div style="font-size:13px;font-weight:600" id="mes-title">—</div><div class="msm" id="mes-dias">—</div></div>
+      <div class="mes-grid">
+        <div class="mes-cell"><div class="mc-label">FT faturado</div><div class="mc-val g" id="mc-ft">—</div></div>
+        <div class="mes-cell"><div class="mc-label">PT faturado</div><div class="mc-val t" id="mc-pt">—</div></div>
+        <div class="mes-cell"><div class="mc-label">Diaristas fat.</div><div class="mc-val" style="color:var(--cyan)" id="mc-di">—</div></div>
+        <div class="mes-cell"><div class="mc-label">Total ABS</div><div class="mc-val r" id="mc-abs">—</div></div>
+        <div class="mes-cell"><div class="mc-label">Dias registr.</div><div class="mc-val b" id="mc-dias">—</div></div>
+      </div>
+    </div>
+    <div class="bgroup" style="margin-bottom:14px;">
+      <button class="btn btn-o btn-sm" onclick="exportarConsolidadoCSV()">Exportar consolidado CSV</button>
+    </div>
+  </div>
+
+  <!-- Lista de dias -->
+  <div id="hist-list"></div>
+</div></div>
+
+
+
+<script>
+// ══ STATE ══════════════════════════════════════════════
+let escalas=[
+  {id:1,nome:'Turno A — Manhã',turno:'06h–14h',qty:35,tipo:'FT'},
+  {id:2,nome:'Turno B — Tarde',turno:'14h–22h',qty:35,tipo:'FT'},
+  {id:3,nome:'Turno C — Noite',turno:'22h–06h',qty:35,tipo:'FT'}
+];
+let nxEsc=4;
+let logFull=[];   // {nome,idGroot,ldpa,tipo:'FT'|'PT',escalaId}
+let diaristas=[]; // {nome,idGroot,ldpa}
+let rostering=[]; // {nome,idGroot,ldpa,escalaId,escalaNome}
+let presenca=[];  // {nome,idGroot,ldpa}
+let validados=[]; // resultado cruzamento
+let filtro='todos';
+let historico=[];
+let calcAtual=null;
+const MOTIVOS_JUST=['Folga','Férias','Suspensão','Treinamento','Licença médica','Outro'];
+
+const LS='hc_ssp36_v4';
+
+// ══ PERSIST ════════════════════════════════════════════
+function salvarLS(){
+  try{
+    // localStorage: dados permanentes — cadastro, escalas, histórico, data atual
+    localStorage.setItem(LS,JSON.stringify({
+      escalas,logFull,diaristas,historico,
+      dataGlobal:document.getElementById('data-global')?.value||'',
+    }));
+    // sessionStorage: dados da sessão do dia (limpa ao fechar aba/janela)
+    const dataAtual=document.getElementById('data-global')?.value||'';
+    sessionStorage.setItem(LS+'_sess',JSON.stringify({
+      rostering,presenca,validados,dataAtual,
+      arquivosRos:_arquivos.ros.map(a=>({nome:a.nome,txt:a.txt,linhas:a.linhas})),
+      arquivosPre:_arquivos.pre.map(a=>({nome:a.nome,txt:a.txt,linhas:a.linhas})),
+    }));
+  }catch(e){}
+}
+function carregarLS(){
+  try{
+    // Dados permanentes
+    const d=JSON.parse(localStorage.getItem(LS)||'null');
+    if(d){
+      if(d.escalas){
+      escalas=d.escalas.map(e=>({
+        ...e,
+        // normaliza dsrDia: undefined/null → null, string → int
+        dsrDia: (e.dsrDia===undefined||e.dsrDia===null||e.dsrDia==='') ? null : parseInt(e.dsrDia)
+      }));
+    }
+      if(d.logFull)  logFull=d.logFull;
+      if(d.diaristas)diaristas=d.diaristas;
+      if(d.historico)historico=d.historico;
+      nxEsc=escalas.reduce((m,e)=>Math.max(m,e.id),0)+1;
+      if(d.dataGlobal) setTimeout(()=>{
+        const el=document.getElementById('data-global');
+        if(el&&!el.value)el.value=d.dataGlobal;
+      },0);
+    }
+    // Dados da sessão (só restaura se a data ainda é a mesma)
+    const s=JSON.parse(sessionStorage.getItem(LS+'_sess')||'null');
+    const dataLS=d?.dataGlobal||'';
+    if(s&&s.dataAtual&&s.dataAtual===dataLS){
+      if(s.rostering) rostering=s.rostering;
+      if(s.presenca)  presenca=s.presenca;
+      if(s.validados) validados=s.validados;
+      if(s.arquivosRos)_arquivos.ros=s.arquivosRos;
+      if(s.arquivosPre)_arquivos.pre=s.arquivosPre;
+    }
+  }catch(e){}
+}
+
+// ══ SINCRONIZAÇÃO DE DATA ══════════════════════════════
+function sincronizarData(val,forcar){
+  const dg=document.getElementById('data-global');
+  const dataAnterior=dg?.value||'';
+
+  // se mudou o dia, salva o dia anterior no histórico de sessão e limpa
+  if(val&&dataAnterior&&val!==dataAnterior&&!forcar){
+    if(validados.length||rostering.length){
+      if(!confirm(`Ao mudar para ${new Date(val+'T12:00:00').toLocaleDateString('pt-BR')}, os dados do dia ${new Date(dataAnterior+'T12:00:00').toLocaleDateString('pt-BR')} serão limpos da sessão.\nOs lançamentos já salvos ficam na Visualização.\n\nContinuar?`)){
+        // reverte o campo de data
+        const rd=document.getElementById('ros-data-ref');
+        if(rd)rd.value=dataAnterior;
+        return;
+      }
+    }
+    // limpa sessão
+    rostering=[];presenca=[];validados=[];filtro='todos';calcAtual=null;
+    _arquivos.ros=[];_arquivos.pre=[];
+    renderFilesPanel('ros');renderFilesPanel('pre');
+    atualizarStatusImport();
+    sessionStorage.removeItem(LS+'_sess');
+    // limpa campos de importação
+    ['dzs-ros','dzs-pre'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+    // remove prompts de data pendentes
+    ['data-prompt-ros','data-prompt-pre'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  }
+
+  if(dg)dg.value=val;
+  const dd=document.getElementById('data-display');
+  if(dd){
+    if(val){
+      const d=new Date(val+'T12:00:00');
+      dd.textContent=d.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+    } else dd.textContent='—';
+  }
+  // re-renderiza escalas para atualizar quais estão ativas
+  renderEsc();
+  renderEscSel();
+  salvarLS();
+  gerarTexto();
+}
+
+// ══ INIT ═══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  carregarLS();
+  const now=new Date();
+  document.getElementById('hdate').textContent=now.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('mes-ref').value=now.toISOString().slice(0,7);
+  // hist-mes preenchido pela aba vis quando aberta
+
+  // restaura ou inicializa data — ros-data-ref é a fonte, data-global segue
+  const rd=document.getElementById('ros-data-ref');
+  const dg=document.getElementById('data-global');
+  const dataRestaurada=dg?.value||'';
+  if(dataRestaurada){
+    if(rd)rd.value=dataRestaurada;
+    sincronizarData(dataRestaurada);
+  } else {
+    const hoje=now.toISOString().slice(0,10);
+    if(rd)rd.value=hoje;
+    if(dg)dg.value=hoje;
+    sincronizarData(hoje);
+  }
+
+  renderEsc();renderEscSel();renderCad();renderVis();
+  renderFilesPanel('ros');
+  renderFilesPanel('pre');
+  atualizarStatusImport();
+
+  if(validados.length){
+    renderStats();
+    renderVal();
+    document.getElementById('b-val').textContent=validados.length;
+    calcAtual=calcMELI();
+  }
+});
+
+// ══ TABS ═══════════════════════════════════════════════
+function showTab(t){
+  ['sch','cad','imp','val','fat','vis'].forEach(id=>{
+    const p=document.getElementById('panel-'+id);
+    const tb=document.getElementById('tab-'+id);
+    if(p)p.classList.toggle('active',id===t);
+    if(tb)tb.classList.toggle('active',id===t);
+  });
+  if(t==='fat'){calcAtual=calcMELI();gerarFatura();}
+  if(t==='vis'){const hm=document.getElementById('hist-mes');if(hm&&!hm.value){const now=new Date();hm.value=now.toISOString().slice(0,7);}renderVis();}
+}
+function showIT(t){
+  ['ros','pre'].forEach(id=>{
+    document.getElementById('ip-'+id).style.display=id===t?'block':'none';
+    document.getElementById('it-'+id).classList.toggle('active',id===t);
+  });
+}
+
+// ══ DROPZONE ═══════════════════════════════════════════
+function dzDrag(e,id){e.preventDefault();document.getElementById('dz-'+id).classList.add('drag');}
+function dzLeave(id){document.getElementById('dz-'+id).classList.remove('drag');}
+function dzDrop(e,id){e.preventDefault();dzLeave(id);const f=e.dataTransfer.files[0];if(f)handleFile(f,id);}
+function dzStatus(id,msg,ok=true){const el=document.getElementById('dzs-'+id);el.style.display='block';el.style.color=ok?'var(--green)':'var(--red)';el.textContent=msg;}
+
+// ══ CSV ════════════════════════════════════════════════
+const norm=n=>n.trim().toLowerCase().replace(/\s+/g,' ');
+
+function detectSep(linhas){
+  const amostra=linhas.slice(0,3).join('\n');
+  const tabs=(amostra.match(/\t/g)||[]).length;
+  const semis=(amostra.match(/;/g)||[]).length;
+  const pipes=(amostra.match(/\|/g)||[]).length;
+  const commas=(amostra.match(/,/g)||[]).length;
+  const max=Math.max(tabs,semis,pipes,commas);
+  if(max===0)return',';
+  if(tabs===max)return'\t';
+  if(semis===max)return';';
+  if(pipes===max)return'|';
+  return',';
+}
+
+function parseCSV(txt){
+  // normaliza quebras de linha (Windows \r\n, Mac \r, Unix \n)
+  const linhas=txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!linhas.length)return[];
+
+  const sep=detectSep(linhas);
+
+  // detecta cabeçalho: se a primeira linha tiver texto não-numérico típico
+  const primeiraLower=linhas[0].toLowerCase();
+  const temCabecalho=primeiraLower.includes('nome')||primeiraLower.includes('name')||
+    primeiraLower.includes('colaborador')||primeiraLower.includes('funcionario')||
+    primeiraLower.includes('id')&&primeiraLower.includes('ldpa');
+  const inicio=temCabecalho?1:0;
+
+  return linhas.slice(inicio).map(l=>{
+    // parser simples que respeita campos entre aspas
+    const cols=[];
+    let cur='',inQ=false;
+    for(let i=0;i<l.length;i++){
+      const ch=l[i];
+      if(ch==='"'){inQ=!inQ;}
+      else if(!inQ&&ch===sep){cols.push(cur.trim());cur='';}
+      else cur+=ch;
+    }
+    cols.push(cur.trim());
+    return cols;
+  });
+}
+
+function handleFile(f,id){
+  // tenta UTF-8 primeiro; se encontrar caracteres de substituição, tenta latin1
+  const tryRead=(enc)=>new Promise((res,rej)=>{
+    const r=new FileReader();
+    r.onload=e=>res(e.target.result);
+    r.onerror=rej;
+    r.readAsText(f,enc);
+  });
+
+  tryRead('UTF-8').then(txt=>{
+    // se tiver muitos replacement chars, provavelmente é Windows-1252
+    const replacements=(txt.match(/\uFFFD/g)||[]).length;
+    if(replacements>3){
+      return tryRead('windows-1252');
+    }
+    return txt;
+  }).then(txt=>{
+    // remove BOM se presente
+    const clean=txt.replace(/^\uFEFF/,'');
+    mostrarPrevia(clean,id);
+  }).catch(()=>dzStatus(id,'Erro ao ler o arquivo.',false));
+}
+
+// armazena textos aguardando confirmação
+const _pendingImport={};
+
+function mostrarPrevia(txt,id){
+  const rows=mapearColunas(txt).rows;
+  if(!rows.length){dzStatus(id,'Arquivo vazio ou formato não reconhecido.',false);return;}
+
+  // guarda o texto para uso posterior sem passar pelo HTML
+  _pendingImport[id]=txt;
+
+  const mapa={
+    lf:{titulo:'Prévia — Log Full',cols:['Nome','ID Groot','LDPA','Tipo','Escala']},
+    di:{titulo:'Prévia — Diaristas',cols:['Nome','ID Groot','LDPA']},
+    ros:{titulo:'Prévia — Rostering',cols:['Nome','ID Groot','LDPA']},
+    pre:{titulo:'Prévia — Presenças',cols:['Nome','ID Groot','LDPA']}
+  };
+  const m=mapa[id];
+
+  const {idx}=mapearColunas(txt);
+  const amostra=rows.slice(0,5);
+  const thead=m.cols.map(c=>`<th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap">${c}</th>`).join('');
+
+  // monta prévia usando extrairPessoa para mostrar já mapeado
+  const tbody=amostra.map(cols=>{
+    const p=extrairPessoa(cols,idx);
+    const vals=[p.nome,p.idGroot,p.ldpa,p.tipo,p.escala];
+    return`<tr>${vals.slice(0,m.cols.length).map(v=>`<td style="padding:5px 10px;font-size:12px;font-family:var(--mono);border-bottom:1px solid var(--border)">${v||'—'}</td>`).join('')}</tr>`;
+  }).join('');
+
+  if(!document.getElementById('prev-'+id)){
+    const div=document.createElement('div');
+    div.id='prev-'+id;
+    div.style.cssText='margin-top:10px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;overflow:hidden;';
+    const dz=document.getElementById('dz-'+id);
+    dz.parentNode.insertBefore(div,document.getElementById('dzs-'+id).nextSibling);
+  }
+  document.getElementById('prev-'+id).innerHTML=`
+    <div style="padding:8px 12px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+      <span style="font-size:11px;font-weight:600;">${m.titulo}</span>
+      <span style="font-family:var(--mono);font-size:10px;color:var(--muted);">${rows.length} linha(s) — mostrando ${amostra.length}</span>
+    </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead><tr>${thead}</tr></thead>
+        <tbody>${tbody}</tbody>
+      </table>
+    </div>
+    <div style="padding:8px 12px;display:flex;gap:8px;border-top:1px solid var(--border);">
+      <button class="btn btn-p btn-sm" onclick="confirmarImport('${id}')">Confirmar importação (${rows.length})</button>
+      <button class="btn btn-o btn-sm" onclick="cancelarImport('${id}')">Cancelar</button>
+    </div>`;
+
+  dzStatus(id,`${rows.length} linha(s) lida(s) — confira a prévia e confirme.`);
+}
+
+function confirmarImport(id){
+  const txt=_pendingImport[id];
+  if(!txt){dzStatus(id,'Nenhum arquivo pendente.',false);return;}
+  if(id==='lf')processCSVCad(txt,'lf');
+  else if(id==='di')processCSVCad(txt,'di');
+  else if(id==='ros')processCSVRos(txt);
+  else if(id==='pre')processCSVPre(txt);
+  delete _pendingImport[id];
+  const prev=document.getElementById('prev-'+id);
+  if(prev)prev.innerHTML='';
+}
+
+function cancelarImport(id){
+  delete _pendingImport[id];
+  const prev=document.getElementById('prev-'+id);
+  if(prev)prev.innerHTML='';
+  dzStatus(id,'Importação cancelada.');
+}
+
+// ══ SCHEDULING ═════════════════════════════════════════
+// Retorna true se a escala está ativa na data informada
+function testarDSR(){
+  const dataRef=document.getElementById('data-global')?.value||'';
+  const dow=dataRef?new Date(dataRef+'T12:00:00').getDay():-1;
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  let msg=`Data: ${dataRef} → ${dias[dow]||'?'} (getDay=${dow})
+
+`;
+  escalas.forEach(e=>{
+    const dsr=e.dsrDia;
+    const isDSR=dsr!==undefined&&dsr!==null&&dsr!==''&&dow===parseInt(dsr);
+    msg+=`${e.nome}: dsrDia=${dsr} (${typeof dsr}) → ${isDSR?'🔴 DSR':'🟢 opera'}
+`;
+  });
+  alert(msg);
+}
+
+function escalaAtivaNoDia(esc, dataStr){
+  if(!dataStr)return true; // sem data, considera todas ativas
+  if(!esc.dataInicio&&!esc.dataFim)return true; // sem vigência = ativa sempre
+  const d=new Date(dataStr+'T12:00:00');
+  const ini=esc.dataInicio?new Date(esc.dataInicio+'T12:00:00'):null;
+  const fim=esc.dataFim?new Date(esc.dataFim+'T12:00:00'):null;
+  if(ini&&d<ini)return false;
+  if(fim&&d>fim)return false;
+  return true;
+}
+
+// Retorna escalas ativas na data de referência atual
+function escalasAtivas(){
+  const data=document.getElementById('data-global')?.value||'';
+  return escalas.filter(e=>escalaAtivaNoDia(e,data));
+}
+
+function renderEsc(){
+  const dataRef=document.getElementById('data-global')?.value||'';
+  const dtLabel=dataRef?new Date(dataRef+'T12:00:00').toLocaleDateString('pt-BR'):'(sem data definida)';
+  const badgeEl=document.getElementById('badge-data-sch');
+  if(badgeEl)badgeEl.textContent=`Referência: ${dtLabel}`;
+
+  document.getElementById('esc-grid').innerHTML=escalas.map(e=>{
+    const ativa=escalaAtivaNoDia(e,dataRef);
+    // verifica se hoje é dia de DSR desta escala
+    const ehDSR=dataRef&&e.dsrDia!=null&&new Date(dataRef+'T12:00:00').getDay()===e.dsrDia;
+    const diasSemana=[
+      {v:'',l:'— Sem DSR —'},
+      {v:0,l:'Domingo'},{v:1,l:'Segunda'},{v:2,l:'Terça'},
+      {v:3,l:'Quarta'},{v:4,l:'Quinta'},{v:5,l:'Sexta'},{v:6,l:'Sábado'}
+    ];
+    return`
+    <div class="esc-item" style="opacity:${ativa?1:0.45};border-left:3px solid ${ehDSR?'var(--purple)':ativa?'var(--accent)':'var(--border)'};">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:500">${e.nome}
+          ${ehDSR?'<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:#1a1030;color:var(--purple);border:1px solid #2d1a50;margin-left:6px;">DSR hoje</span>':''}
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted)">${e.turno}</div>
+        <div style="font-family:var(--mono);font-size:10px;margin-top:3px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span style="color:var(--muted)">Vigência:</span>
+          <input type="date" value="${e.dataInicio||''}" onchange="chVig(${e.id},'dataInicio',this.value)"
+            style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 6px;font-size:11px;font-family:var(--mono);outline:none;">
+          <span style="color:var(--muted)">até</span>
+          <input type="date" value="${e.dataFim||''}" onchange="chVig(${e.id},'dataFim',this.value)"
+            style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 6px;font-size:11px;font-family:var(--mono);outline:none;">
+          <span style="color:${ativa?'var(--green)':'var(--muted)'};font-size:10px;">${ativa?'● ativa':'○ inativa'}</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:10px;margin-top:4px;display:flex;align-items:center;gap:6px;">
+          <span style="color:var(--muted)">DSR:</span>
+          <select onchange="chDSR(${e.id},this.value)"
+            style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;color:var(--text);padding:2px 6px;font-size:11px;font-family:var(--mono);outline:none;">
+            ${diasSemana.map(d=>`<option value="${d.v}"${
+              (d.v===''&&(e.dsrDia===null||e.dsrDia===undefined))||
+              (d.v!==''&&parseInt(d.v)===e.dsrDia)
+              ?' selected':''}>${d.l}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <select class="esc-type-sel" onchange="chTipo(${e.id},this.value)">
+        <option value="FT"${e.tipo==='FT'?' selected':''}>Full Time</option>
+        <option value="PT"${e.tipo==='PT'?' selected':''}>Part Time</option>
+      </select>
+      <div class="qrow">
+        <button class="qb" onclick="chQ(${e.id},-1)">−</button>
+        <div class="qv">${e.qty}</div>
+        <button class="qb" onclick="chQ(${e.id},+1)">+</button>
+        <button class="qb btn-sm" onclick="delE(${e.id})" style="margin-left:3px;font-size:11px;color:var(--muted)">✕</button>
+        <button class="qb btn-sm" onclick="renovarEscala(${e.id})" title="Criar cópia para próximo período" style="margin-left:3px;font-size:10px;color:var(--accent2)">↻</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // total apenas das escalas ativas no dia
+  const ativas=escalasAtivas();
+  const tot=ativas.reduce((s,e)=>s+e.qty,0);
+  const tv=document.getElementById('tval');
+  if(tv){tv.textContent=tot;tv.className='tval ok';}
+  const qd=document.getElementById('quadro-dia');
+  if(qd)qd.textContent=tot+' ('+ativas.length+' escala'+(ativas.length!==1?'s':'')+')';
+  salvarLS();
+}
+
+function chQ(id,d){const e=escalas.find(x=>x.id===id);if(e){e.qty=Math.max(0,e.qty+d);renderEsc();}}
+function chTipo(id,t){const e=escalas.find(x=>x.id===id);if(e){e.tipo=t;salvarLS();renderEsc();}}
+function chVig(id,campo,val){const e=escalas.find(x=>x.id===id);if(e){e[campo]=val||'';renderEsc();renderEscSel();}}
+function chDSR(id,val){
+  const e=escalas.find(x=>x.id===id);if(!e)return;
+  const anterior=e.dsrDia;
+  e.dsrDia=(val===''||val==null)?null:parseInt(val);
+  salvarLS();
+  // confirma visualmente que salvou
+  const dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const label=e.dsrDia!=null?dias[e.dsrDia]:'Sem DSR';
+  console.log(`DSR salvo: ${e.nome} → ${e.dsrDia} (${label}), anterior=${anterior}`);
+  renderEsc();
+}
+// Retorna true se a data informada é dia de DSR desta escala
+function escalaEmDSR(esc,dataStr){
+  if(esc.dsrDia===undefined||esc.dsrDia===null||esc.dsrDia==='')return false;
+  if(!dataStr)return false;
+  return new Date(dataStr+'T12:00:00').getDay()===parseInt(esc.dsrDia);
+}
+function delE(id){escalas=escalas.filter(x=>x.id!==id);renderEsc();renderEscSel();}
+
+function renovarEscala(id){
+  const orig=escalas.find(e=>e.id===id);
+  if(!orig)return;
+
+  // calcula próximo período: se tiver dataFim, começa no dia seguinte
+  // senão usa próximo mês a partir do mes-ref
+  let novaInicio='', novaFim='';
+  if(orig.dataFim){
+    const fim=new Date(orig.dataFim+'T12:00:00');
+    const proximo=new Date(fim);
+    proximo.setDate(proximo.getDate()+1);
+    novaInicio=proximo.toISOString().slice(0,10);
+    // fim = último dia do mês do novaInicio
+    const ultimoDia=new Date(proximo.getFullYear(),proximo.getMonth()+1,0);
+    novaFim=ultimoDia.toISOString().slice(0,10);
+  } else {
+    const mes=document.getElementById('mes-ref')?.value;
+    if(mes){
+      const [ano,m]=mes.split('-');
+      // próximo mês
+      const d=new Date(+ano,+m,1);
+      novaInicio=d.toISOString().slice(0,10);
+      const ultimo=new Date(d.getFullYear(),d.getMonth()+1,0);
+      novaFim=ultimo.toISOString().slice(0,10);
+    }
+  }
+
+  // encerra a escala original no dia anterior ao início da nova
+  if(novaInicio&&!orig.dataFim){
+    const dAntes=new Date(novaInicio+'T12:00:00');
+    dAntes.setDate(dAntes.getDate()-1);
+    orig.dataFim=dAntes.toISOString().slice(0,10);
+  }
+
+  // cria a nova escala (cópia) com nova vigência
+  const nova={
+    id:nxEsc++,
+    nome:orig.nome,
+    turno:orig.turno,
+    qty:orig.qty,
+    tipo:orig.tipo,
+    dataInicio:novaInicio,
+    dataFim:novaFim,
+    dsrDia:orig.dsrDia??null,
+  };
+  escalas.push(nova);
+  renderEsc();renderEscSel();
+
+  // avisa o usuário
+  const dtIni=novaInicio?new Date(novaInicio+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+  const dtFim=novaFim?new Date(novaFim+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+  alert(`Escala "${orig.nome}" renovada!\n\nNova vigência: ${dtIni} → ${dtFim}\nAjuste a quantidade (${nova.qty}) se necessário.`);
+}
+
+function addEscala(){
+  const n=prompt('Nome da escala:','Escala X');if(!n)return;
+  const t=prompt('Horário (ex: 06h–14h):','06h–14h')||'';
+  const q=parseInt(prompt('Quantidade de pessoas:','30'))||30;
+  const tipo=confirm('É Full Time? (Cancelar = Part Time)')?'FT':'PT';
+  // vigência padrão = mês de referência inteiro
+  const mes=document.getElementById('mes-ref')?.value;
+  let dataInicio='', dataFim='';
+  if(mes){
+    const [ano,m]=mes.split('-');
+    dataInicio=`${ano}-${m}-01`;
+    const ultimo=new Date(+ano,+m,0).getDate();
+    dataFim=`${ano}-${m}-${String(ultimo).padStart(2,'0')}`;
+  }
+  escalas.push({id:nxEsc++,nome:n,turno:t,qty:q,tipo,dataInicio,dataFim});
+  renderEsc();renderEscSel();
+}
+
+function renderEscSel(){
+  const dataRef=document.getElementById('data-global')?.value||'';
+  ['esc-dia','lf-e'].forEach(sid=>{
+    const el=document.getElementById(sid);if(!el)return;
+    const cur=el.value;
+    // no select de importação mostra só as ativas; no cadastro mostra todas
+    const lista=sid==='esc-dia'?escalas.filter(e=>escalaAtivaNoDia(e,dataRef)):escalas;
+    el.innerHTML='<option value="">— Selecione —</option>'+
+      lista.map(e=>`<option value="${e.id}"${cur==e.id?' selected':''}>${e.nome} [${e.tipo}]</option>`).join('');
+  });
+}
+
+// ══ CADASTRO ═══════════════════════════════════════════
+// Verifica se algum dos novos cadastros resolve pessoas "sem cadastro" nos validados
+function verificarSemCadastro(novosNomes, novosIds, novosLdpas){
+  if(!validados.length)return;
+  const semCad=validados.filter(p=>p.cat==='desconhecido');
+  if(!semCad.length)return;
+
+  // verifica se algum dos novos cadastros bate com alguém sem cadastro
+  const encontrados=semCad.filter(p=>{
+    const nn=norm(p.nome||'');
+    const id=String(p.idGroot||'').trim();
+    const lp=norm(p.ldpa||'');
+    return novosNomes.some(n=>norm(n)===nn&&nn)
+        || novosIds.some(i=>i&&id&&String(i).trim()===id)
+        || novosLdpas.some(l=>norm(l)===lp&&lp);
+  });
+
+  if(!encontrados.length)return;
+
+  // mostra alerta não-bloqueante na aba de cadastro
+  const nomesEncontrados=encontrados.map(p=>p.nome||p.idGroot||'?').join(', ');
+  mostrarAlertaCadastro(
+    `✓ ${encontrados.length} pessoa(s) cadastrada(s) que estava(m) como "sem cadastro" na validação atual: <strong>${nomesEncontrados}</strong>.<br>
+     <a href="#" onclick="event.preventDefault();recruzar()" style="color:var(--accent2);text-decoration:underline;">Clique aqui para recruzar os dados</a> e atualizar a validação.`
+  );
+}
+
+function mostrarAlertaCadastro(html){
+  // remove alerta anterior se existir
+  const old=document.getElementById('alerta-cadastro');
+  if(old)old.remove();
+
+  const div=document.createElement('div');
+  div.id='alerta-cadastro';
+  div.style.cssText='margin:12px 0;padding:10px 14px;background:#0d1a2a;border:1px solid var(--accent);border-radius:7px;font-size:12px;color:var(--text);line-height:1.6;display:flex;align-items:flex-start;gap:9px;';
+  div.innerHTML=`<span style="color:var(--accent2);font-size:16px;flex-shrink:0;">ℹ</span><div style="flex:1">${html}</div><button onclick="document.getElementById('alerta-cadastro').remove()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;flex-shrink:0;padding:0;">✕</button>`;
+
+  // insere no topo do painel de cadastro, após o slabel
+  const painel=document.getElementById('panel-cad');
+  const wrap=painel?.querySelector('.wrap');
+  if(wrap)wrap.insertBefore(div, wrap.firstChild);
+}
+
+function recruzar(){
+  if(!rostering.length&&!presenca.length){
+    alert('Não há dados importados para recruzar. Vá para a aba Importar.');
+    showTab('imp');
+    return;
+  }
+  cruzar();
+  showTab('val');
+}
+
+function addLF(){
+  const n=document.getElementById('lf-n').value.trim();if(!n){alert('Informe o nome.');return;}
+  const g=document.getElementById('lf-g').value.trim();
+  const l=document.getElementById('lf-l').value.trim();
+  logFull.push({nome:n,idGroot:g,ldpa:l,tipo:document.getElementById('lf-t').value,escalaId:parseInt(document.getElementById('lf-e').value)||null});
+  ['lf-n','lf-g','lf-l'].forEach(id=>document.getElementById(id).value='');
+  renderCad();salvarLS();
+  verificarSemCadastro([n],[g],[l]);
+}
+function addDI(){
+  const n=document.getElementById('di-n').value.trim();if(!n){alert('Informe o nome.');return;}
+  const g=document.getElementById('di-g').value.trim();
+  const l=document.getElementById('di-l').value.trim();
+  diaristas.push({nome:n,idGroot:g,ldpa:l});
+  ['di-n','di-g','di-l'].forEach(id=>document.getElementById(id).value='');
+  renderCad();salvarLS();
+  verificarSemCadastro([n],[g],[l]);
+}
+// ── Mapeamento inteligente de colunas ──────────────────
+// Detecta a posição de cada campo pelo cabeçalho, independente da ordem.
+// Suporta variações: "ID", "ID Groot", "Colaborador", "Nome", "LDAP", "LDPA", "Tipo", "Turno", "Escala"
+function splitCSVLine(linha,sep){
+  const cols=[];let cur='',inQ=false;
+  for(let i=0;i<linha.length;i++){
+    const ch=linha[i];
+    if(ch==='"'){if(inQ&&linha[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
+    else if(!inQ&&ch===sep){cols.push(cur.trim());cur='';}
+    else cur+=ch;
+  }
+  cols.push(cur.trim());
+  return cols;
+}
+
+function mapearColunas(txt){
+  const linhas=txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .split('\n').map(l=>l.trim()).filter(Boolean);
+  if(!linhas.length)return{idx:{nome:-1,id:-1,ldpa:-1,tipo:-1,escala:-1},rows:[],temCab:false,sep:','};
+
+  const sep=detectSep(linhas);
+  const cabRaw=splitCSVLine(linhas[0],sep).map(c=>c.toLowerCase().trim());
+
+  const palavrasChave=['id','nome','colaborador','ldap','ldpa','tipo','turno','escala','name',
+    'tax','estado','quantidade','provedor','groot','user ext','operador','data','hora','svc'];
+  const temCab=cabRaw.some(c=>palavrasChave.some(p=>c.includes(p)));
+
+  const find=(...keys)=>{
+    for(const k of keys){const i=cabRaw.findIndex(c=>c.includes(k));if(i>=0)return i;}
+    return -1;
+  };
+
+  let idx;
+  if(temCab){
+    // GROOT ID → id  |  USER EXT → ldpa  |  Operador/Colaborador/Nome → nome
+    idx={
+      nome  : find('colaborador','operador','nome','name'),
+      id    : find('groot id','groot','id'),   // "groot id" antes de "id" simples
+      ldpa  : find('user ext','ldap','ldpa'),  // "user ext" antes de "ldap"
+      tipo  : find('tipo','type'),
+      escala: find('escala','turno'),
+      data  : find('data'),
+      hora  : find('hora'),
+      svc   : find('svc'),
+    };
+    // garante que nome e id não apontem pro mesmo índice
+    if(idx.nome===idx.id&&idx.nome>=0){
+      idx.nome=cabRaw.findIndex(c=>c.includes('colaborador')||c.includes('operador')||c==='nome'||c==='name');
+      idx.id=cabRaw.findIndex(c=>c.includes('groot')||c==='id');
+    }
+  } else {
+    idx={nome:0,id:1,ldpa:2,tipo:3,escala:4,data:-1,hora:-1,svc:-1};
+  }
+
+  const inicio=temCab?1:0;
+  const rows=linhas.slice(inicio).map(l=>splitCSVLine(l,sep));
+  return{idx,rows,sep,temCab};
+}
+
+function extrairPessoa(cols,idx){
+  const get=(i)=>i>=0&&i<cols.length?cols[i].trim():'';
+  return{
+    nome   : get(idx.nome),
+    idGroot: get(idx.id),
+    ldpa   : get(idx.ldpa),
+    tipo   : get(idx.tipo).toUpperCase().includes('PART')||get(idx.tipo).toUpperCase()==='PT'?'PT':'FT',
+    escala : get(idx.escala),
+  };
+}
+
+// Resolve nome de escala para escalaId — busca por nome aproximado
+function resolverEscalaId(nomeEscala){
+  if(!nomeEscala)return null;
+  const n=nomeEscala.trim().toLowerCase();
+  if(!n)return null;
+
+  // 1. Busca exata
+  let esc=escalas.find(e=>e.nome.toLowerCase()===n);
+  if(esc)return esc.id;
+
+  // 2. O nome do HCM contém o nome da escala cadastrada (ex: "Escala B Tarde" → "Escala B")
+  esc=escalas.find(e=>n.includes(e.nome.toLowerCase()));
+  if(esc)return esc.id;
+
+  // 3. O nome da escala cadastrada contém o nome do HCM (ex: "Escala CHP Operações" → "CHP")
+  esc=escalas.find(e=>e.nome.toLowerCase().includes(n));
+  if(esc)return esc.id;
+
+  // 4. Pelo código apenas (ex: "B" → "Escala B") — só se o código tiver 2+ chars para evitar falsos positivos
+  const codigo=n.replace(/^escala\s*/i,'').trim();
+  if(codigo.length>=2){
+    esc=escalas.find(e=>e.nome.toLowerCase().includes(codigo));
+    if(esc)return esc.id;
+  }
+
+  return null;
+}
+
+function processCSVCad(txt,tipo){
+  const {idx,rows}=mapearColunas(txt);
+  let add=0, semEscala=0;
+  const novosNomes=[], novosIds=[], novosLdpas=[];
+  rows.forEach(cols=>{
+    const p=extrairPessoa(cols,idx);
+    if(!p.nome)return;
+    if(tipo==='lf'){
+      const escalaId=resolverEscalaId(p.escala);
+      if(!escalaId&&p.escala)semEscala++;
+      logFull.push({nome:p.nome,idGroot:p.idGroot,ldpa:p.ldpa,tipo:p.tipo,escalaId,escalaNome:p.escala||''});
+    } else {
+      diaristas.push({nome:p.nome,idGroot:p.idGroot,ldpa:p.ldpa});
+    }
+    novosNomes.push(p.nome);
+    novosIds.push(p.idGroot);
+    novosLdpas.push(p.ldpa);
+    add++;
+  });
+  renderCad();salvarLS();
+  let msg=`✓ ${add} pessoa(s) importada(s).`;
+  if(semEscala>0) msg+=` ⚠ ${semEscala} sem escala reconhecida — verifique os nomes de escala no cadastro.`;
+  dzStatus(tipo,msg,semEscala===0);
+  verificarSemCadastro(novosNomes,novosIds,novosLdpas);
+}
+
+// ══ TABELA DE CAP DE ABS (MELI paga até X% de ABS) ════
+function calcCapAbs(pctAbs){
+  // pctAbs = % de ABS sobre Qty MELI (0-100)
+  if(pctAbs<=2.5)  return 2.50;
+  if(pctAbs<=5.0)  return 2.00;
+  if(pctAbs<=10.0) return 1.50;
+  if(pctAbs<=15.0) return 1.00;
+  if(pctAbs<=20.0) return 0.50;
+  if(pctAbs<=25.0) return 0.25;
+  return 0.00; // acima de 25%
+}
+
+// ══ CÁLCULO MELI POR ESCALA + GERAL ════════════════════
+function calcMELI(){
+  if(!validados.length)return null;
+
+  const dataRef=document.getElementById('data-global')?.value||'';
+
+  const escalasNoDia=escalasAtivas();
+  const base=escalasNoDia.map(esc=>{
+    const tipo=esc.tipo;
+    const sched=esc.qty;
+    const isDSR=escalaEmDSR(esc,dataRef);
+
+    const membros=logFull.filter(lf=>lf.escalaId===esc.id);
+    const idsMembros=new Set(membros.map(lf=>String(lf.idGroot||'').trim()||norm(lf.nome)));
+
+    // pessoas sem escala no cadastro — usaremos rostering como proxy
+    const semEscalaCad=new Set(
+      logFull.filter(lf=>!lf.escalaId)
+             .map(lf=>String(lf.idGroot||'').trim()||norm(lf.nome))
+    );
+
+    const pertence=(p)=>{
+      if(p.cat!=='logfull')return false;
+      const chave=String(p.idGroot||'').trim()||norm(p.nome||'');
+      // 1. tem escala no cadastro → usa só o cadastro
+      if(idsMembros.has(chave))return true;
+      // 2. sem escala no cadastro → usa escalaId que veio no rostering como proxy
+      if(semEscalaCad.has(chave)&&p.escalaId===esc.id)return true;
+      return false;
+    };
+
+    const pres=validados.filter(p=>p.situacao==='confirmado'&&pertence(p)).length;
+
+    if(isDSR){
+      // Escala em DSR — não opera, não entra em ABS/Gap
+      // DSR qty = min(sched, presentes) — nunca lança mais que o quadro
+      const dsrQty=sched; // scheduling = total programado para DSR
+      return{
+        esc,tipo,sched,isDSR,
+        ros:0,meli:0,pres:0,abs:0,dsr:dsrQty,dsrSched:sched,dsrPresentes:pres,gap:0,
+        excRoster:0,pctAbs:0,capPct:0,absMeliQty:0,abs3plQty:0,necessidade:0,
+        cobGap:0,cobAbsMeli:0,cobAbs3pl:0,excCobGap:0,excCobAbs:0,cobTotal:0,
+        membros:membros.length,pertence,
+        pessoasPres:validados.filter(p=>p.situacao==='confirmado'&&pertence(p)),
+        pessoasAbs:[],
+        pessoasDSR:validados.filter(p=>p.situacao==='dsr'&&pertence(p)),
+      };
+    }
+
+    const ros  =validados.filter(p=>p.origem==='rostering'&&pertence(p)&&p.situacao!=='dsr').length;
+    const meli =Math.min(sched,ros);
+    const abs  =validados.filter(p=>p.situacao==='falta'&&pertence(p)).length;
+    const just =validados.filter(p=>p.situacao==='justificado'&&pertence(p)).length;
+    const dsrV =validados.filter(p=>p.situacao==='dsr'&&pertence(p)).length;
+    const gap  =Math.max(0,sched-ros);
+    const excRoster=Math.max(0,ros-sched);
+    const pctAbs   =meli>0?(abs/meli)*100:0;
+    const capPct   =calcCapAbs(pctAbs);
+    const absMeliQty=Math.floor((capPct/100)*meli);
+    const abs3plQty =Math.max(0,abs-absMeliQty);
+
+    return{
+      esc,tipo,sched,isDSR:false,
+      ros,meli,pres,abs,just,dsr:0,gap,excRoster,
+      pctAbs:+pctAbs.toFixed(1),capPct,absMeliQty,abs3plQty,
+      necessidade:gap+abs,
+      membros:membros.length,pertence,
+      pessoasPres:validados.filter(p=>p.situacao==='confirmado'&&pertence(p)),
+      pessoasAbs: validados.filter(p=>p.situacao==='falta'&&pertence(p)),
+      pessoasJust:validados.filter(p=>p.situacao==='justificado'&&pertence(p)),
+      pessoasDSR:[],
+    };
+  });
+
+  // excedentes apenas de escalas normais
+  let excPool=base.filter(e=>!e.isDSR).reduce((s,e)=>s+e.excRoster,0);
+  const diTC=validados.filter(p=>p.cat==='diarista').length;
+  let diPool=diTC;
+
+  const porEscala=base.map(e=>{
+    if(e.isDSR)return e;
+    const excCobGap =Math.min(excPool,e.gap);     excPool-=excCobGap;
+    const excCobAbs =Math.min(excPool,e.abs3plQty);excPool-=excCobAbs;
+    const gapRest   =e.gap-excCobGap;
+    const cobGap    =Math.min(diPool,gapRest);    diPool-=cobGap;
+    const cobAbsMeli=Math.min(diPool,e.absMeliQty);diPool-=cobAbsMeli;
+    const cobAbs3pl =Math.min(diPool,e.abs3plQty-excCobAbs);diPool-=cobAbs3pl;
+    const cobTotal  =excCobGap+excCobAbs+cobGap+cobAbsMeli+cobAbs3pl;
+    return{...e,excCobGap,excCobAbs,cobGap,cobAbsMeli,cobAbs3pl,cobTotal};
+  });
+
+  const diFat=Math.max(0,diPool);
+
+  const escsFT=porEscala.filter(e=>e.tipo==='FT'&&!e.isDSR);
+  const escsPT=porEscala.filter(e=>e.tipo==='PT'&&!e.isDSR);
+  const sum=(arr,key)=>arr.reduce((s,e)=>s+(e[key]||0),0);
+
+  const schedFT=sum(escsFT,'sched');  const schedPT=sum(escsPT,'sched');
+  const rosFT=sum(escsFT,'ros');      const rosPT=sum(escsPT,'ros');
+  const meliFT=sum(escsFT,'meli');    const meliPT=sum(escsPT,'meli');
+  const presFT=sum(escsFT,'pres');    const presPT=sum(escsPT,'pres');
+  const absFT=sum(escsFT,'abs');      const absPT=sum(escsPT,'abs');
+  const gapFT=sum(escsFT,'gap');      const gapPT=sum(escsPT,'gap');
+  const excRosterFT=sum(escsFT,'excRoster'); const excRosterPT=sum(escsPT,'excRoster');
+  const diCobGapFT=sum(escsFT,'cobGap');     const diCobGapPT=sum(escsPT,'cobGap');
+  const diCobAbsFT_3pl=sum(escsFT,'cobAbs3pl'); const diCobAbsPT_3pl=sum(escsPT,'cobAbs3pl');
+  const diCobAbsFT_mel=sum(escsFT,'cobAbsMeli'); const diCobAbsPT_mel=sum(escsPT,'cobAbsMeli');
+  const diCobAbsFT=diCobAbsFT_3pl; const diCobAbsPT=diCobAbsPT_3pl;
+  const excCobGapFT=sum(escsFT,'excCobGap'); const excCobGapPT=sum(escsPT,'excCobGap');
+  const excCobAbsFT=sum(escsFT,'excCobAbs'); const excCobAbsPT=sum(escsPT,'excCobAbs');
+  const excSobrando=excPool;
+
+  // totais DSR
+  const dsrFT=sum(porEscala.filter(e=>e.isDSR&&e.tipo==='FT'),'dsr');
+  const dsrPT=sum(porEscala.filter(e=>e.isDSR&&e.tipo==='PT'),'dsr');
+  const dsrTotal=dsrFT+dsrPT;
+  const escalasDSR=porEscala.filter(e=>e.isDSR);
+
+  const meliTotal=meliFT+meliPT;
+  const absTotal=absFT+absPT;
+  const pctAbsGeral=meliTotal>0?+((absTotal/meliTotal)*100).toFixed(1):0;
+  const capPctGeral=calcCapAbs(pctAbsGeral);
+  const absMeliGeralQty=meliTotal>0?Math.floor((capPctGeral/100)*meliTotal):0;
+
+  const dcCount=validados.filter(p=>p.cat==='desconhecido').length;
+  const totFT=meliFT; const totPT=meliPT;
+  const totDI=diFat;  const totGeral=totFT+totPT+totDI;
+
+  const justFT=sum(escsFT,'just');
+  const justPT=sum(escsPT,'just');
+
+  const faltasFT=validados.filter(p=>p.situacao==='falta'&&p.cat==='logfull'&&p.subtipo==='FT');
+  const faltasPT=validados.filter(p=>p.situacao==='falta'&&p.cat==='logfull'&&p.subtipo==='PT');
+  // lista de justificados com motivo agrupado
+  const justList=validados.filter(p=>p.situacao==='justificado');
+  const soroList=validados.filter(p=>p.situacao==='soro');
+  const dcList=validados.filter(p=>p.cat==='desconhecido');
+  const escalasSemCobertura=porEscala.filter(e=>!e.isDSR&&(e.gap>0||e.abs>0));
+
+  const eid=rostering[0]?.escalaId;
+  const esc=escalas.find(e=>e.id===eid);
+
+  return{
+    esc,porEscala,escalasSemCobertura,escalasDSR,
+    schedFT,schedPT,rosFT,rosPT,meliFT,meliPT,
+    presFT,presPT,absFT,absPT,justFT,justPT,gapFT,gapPT,
+    dsrFT,dsrPT,dsrTotal,
+    excRosterFT,excRosterPT,excSobrando,
+    excCobGapFT,excCobGapPT,excCobAbsFT,excCobAbsPT,
+    pctAbsGeral,capPctGeral,absMeliGeralQty,
+    diTC,diCobGapFT,diCobGapPT,
+    diCobAbsFT,diCobAbsPT,
+    diCobAbsFT_mel,diCobAbsPT_mel,
+    diFat,dcCount,totFT,totPT,totDI,totGeral,
+    faltasFT,faltasPT,justList,soroList,dcList
+  };
+}
+
+function renderCad(){
+  const qlf=(document.getElementById('s-lf').value||'').toLowerCase();
+  const qdi=(document.getElementById('s-di').value||'').toLowerCase();
+  const flf=logFull.filter(p=>!qlf||norm(p.nome).includes(qlf)||p.idGroot.includes(qlf)||p.ldpa.toLowerCase().includes(qlf));
+  document.getElementById('cnt-lf').textContent=logFull.length+' cadastrado'+(logFull.length!==1?'s':'');
+  document.getElementById('tb-lf').innerHTML=flf.length
+    ?flf.map(p=>{const i=logFull.indexOf(p);const esc=escalas.find(e=>e.id===p.escalaId);
+      const pill=p.tipo==='PT'?'<span class="pill p-pt">PT</span>':'<span class="pill p-ft">FT</span>';
+      return`<tr><td style="font-weight:500">${p.nome}</td><td class="msm">${p.idGroot||'—'}</td><td class="msm">${p.ldpa||'—'}</td><td>${pill}</td><td class="msm">${esc?esc.nome:'—'}</td><td><button class="btn btn-d btn-sm" onclick="delLF(${i})">✕</button></td></tr>`;}).join('')
+    :'<tr><td colspan="6"><div class="empty"><div class="empty-t">Nenhum colaborador cadastrado</div></div></td></tr>';
+  const fdi=diaristas.filter(p=>!qdi||norm(p.nome).includes(qdi)||p.idGroot.includes(qdi)||p.ldpa.toLowerCase().includes(qdi));
+  document.getElementById('cnt-di').textContent=diaristas.length+' cadastrado'+(diaristas.length!==1?'s':'');
+  document.getElementById('tb-di').innerHTML=fdi.length
+    ?fdi.map(p=>{const i=diaristas.indexOf(p);return`<tr><td style="font-weight:500">${p.nome}</td><td class="msm">${p.idGroot||'—'}</td><td class="msm">${p.ldpa||'—'}</td><td><button class="btn btn-d btn-sm" onclick="delDI(${i})">✕</button></td></tr>`;}).join('')
+    :'<tr><td colspan="4"><div class="empty"><div class="empty-t">Nenhum diarista cadastrado</div></div></td></tr>';
+  document.getElementById('b-cad').textContent=logFull.length+diaristas.length;
+}
+function delLF(i){logFull.splice(i,1);renderCad();salvarLS();}
+function delDI(i){diaristas.splice(i,1);renderCad();salvarLS();}
+function limparCadastro(tipo){
+  const label=tipo==='lf'?'colaboradores Log Full':'diaristas';
+  const lista=tipo==='lf'?logFull:diaristas;
+  if(!lista.length){alert(`Nenhum ${label} cadastrado.`);return;}
+  if(!confirm(`Apagar todos os ${lista.length} ${label}? Esta ação não pode ser desfeita.`))return;
+  if(tipo==='lf')logFull=[];else diaristas=[];
+  renderCad();salvarLS();
+}
+function lerCSV(ev,tipo){const f=ev.target.files[0];if(!f)return;handleFile(f,tipo);ev.target.value='';}
+
+function exportarCadastroCSV(tipo){
+  const lista=tipo==='lf'?logFull:diaristas;
+  const nome=tipo==='lf'?'logfull_ssp36.csv':'diaristas_ssp36.csv';
+  const cab=tipo==='lf'?'Nome;ID Groot;LDPA;Tipo;Escala\n':'Nome;ID Groot;LDPA\n';
+  const linhas=lista.map(p=>{
+    const esc=tipo==='lf'?(escalas.find(e=>e.id===p.escalaId)?.nome||''):'';
+    const cols=tipo==='lf'?[p.nome,p.idGroot,p.ldpa,p.tipo||'FT',esc]:[p.nome,p.idGroot,p.ldpa];
+    return cols.map(c=>`"${(c||'').replace(/"/g,'""')}"`).join(';');
+  }).join('\n');
+  baixar('\uFEFF'+cab+linhas,nome,'text/csv;charset=utf-8');
+}
+
+// ══ IMPORTAR — MULTI-ARQUIVO ════════════════════════════
+const _arquivos={ros:[],pre:[]};
+
+function lerArq(ev,t){const f=ev.target.files[0];if(!f)return;
+  if(f.name.match(/\.xlsx?$/i))handleXLSXMulti(f,t);
+  else handleFileMulti(f,t);
+  ev.target.value='';
+}
+function lerArqMulti(ev,t){
+  Array.from(ev.target.files).forEach(f=>{
+    if(f.name.match(/\.xlsx?$/i))handleXLSXMulti(f,t);
+    else handleFileMulti(f,t);
+  });
+  ev.target.value='';
+}
+function dzDropMulti(e,id){
+  e.preventDefault();dzLeave(id);
+  Array.from(e.dataTransfer.files).forEach(f=>{
+    if(f.name.match(/\.xlsx?$/i))handleXLSXMulti(f,id);
+    else handleFileMulti(f,id);
+  });
+}
+function handleFileMulti(f,id){
+  const tryRead=(enc)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsText(f,enc);});
+  tryRead('UTF-8').then(txt=>{
+    const rep=(txt.match(/\uFFFD/g)||[]).length;
+    return rep>3?tryRead('windows-1252'):txt;
+  }).then(txt=>adicionarArquivo(id,f.name,txt.replace(/^\uFEFF/,'')))
+   .catch(()=>alert('Erro ao ler: '+f.name));
+}
+function handleXLSXMulti(f,id){
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:false});
+      // usa vírgula como sep — SheetJS padrão, mais confiável que tab com FS especial
+      const txt=XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+      adicionarArquivo(id,f.name,txt);
+    }catch(ex){alert('Erro ao ler XLSX: '+f.name);}
+  };
+  r.readAsArrayBuffer(f);
+}
+function handleXLSX(f,id){handleXLSXMulti(f,id);}
+
+function adicionarArquivo(id,nome,txt){
+  const brutas=txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n')
+    .split('\n').map(l=>l.trim()).filter(Boolean);
+  const linhas=brutas.length>1?brutas.length-1:brutas.length;
+
+  // captura escala selecionada NO MOMENTO que o arquivo é adicionado
+  const eidAtual=id==='ros'?(parseInt(document.getElementById('esc-dia')?.value)||null):null;
+  const escAtual=eidAtual?escalas.find(e=>e.id===eidAtual):null;
+
+  _arquivos[id]=_arquivos[id].filter(a=>a.nome!==nome);
+  _arquivos[id].push({nome,txt,linhas,escalaId:eidAtual,escalaNome:escAtual?.nome||''});
+  renderFilesPanel(id);
+
+  const dataAtual=document.getElementById('ros-data-ref')?.value;
+  if(!dataAtual){
+    const wrap=document.getElementById('files-'+id);
+    if(wrap&&!document.getElementById('data-prompt-'+id)){
+      const prompt=document.createElement('div');
+      prompt.id='data-prompt-'+id;
+      prompt.style.cssText='margin-top:8px;padding:10px 12px;background:var(--abg);border:1px solid var(--amber);border-radius:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
+      prompt.innerHTML=`<span style="font-size:12px;color:var(--amber);font-weight:500;">📅 Sobre qual dia é este arquivo?</span><input type="date" id="date-pick-${id}" style="background:var(--bg3);border:1px solid var(--amber);border-radius:4px;color:var(--text);padding:5px 9px;font-size:12px;font-family:var(--mono);outline:none;"><button class="btn btn-p btn-sm" onclick="aplicarDataArquivo('${id}')">Confirmar data</button>`;
+      wrap.appendChild(prompt);
+      const ontem=new Date();ontem.setDate(ontem.getDate()-1);
+      document.getElementById('date-pick-'+id).value=ontem.toISOString().slice(0,10);
+    }
+  }
+}
+
+function aplicarDataArquivo(id){
+  const val=document.getElementById('date-pick-'+id)?.value;
+  if(!val){alert('Selecione uma data.');return;}
+  // aplica a todos os campos de data do sistema
+  const rd=document.getElementById('ros-data-ref');
+  if(rd)rd.value=val;
+  sincronizarData(val);
+  // remove o prompt
+  const p=document.getElementById('data-prompt-'+id);
+  if(p)p.remove();
+}
+function renderFilesPanel(id){
+  const lista=_arquivos[id];
+  const wrap=document.getElementById('files-'+id);
+  const listEl=document.getElementById('files-'+id+'-list');
+  const totalEl=document.getElementById(id+'-total');
+  if(!lista.length){if(wrap)wrap.style.display='none';return;}
+  if(wrap)wrap.style.display='block';
+  listEl.innerHTML=lista.map((a,i)=>`
+    <div style="display:flex;align-items:center;gap:9px;padding:7px 11px;background:var(--bg2);border:1px solid var(--border);border-radius:5px;">
+      <div style="font-size:18px;opacity:.5">${a.nome.match(/\.xlsx?$/i)?'📊':'📄'}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${a.nome}</div>
+        <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px;">${a.linhas} linha(s)${a.escalaNome?` · <span style="color:var(--accent2)">${a.escalaNome}</span>`:' · <span style="color:var(--amber)">⚠ sem escala definida</span>'}</div>
+      </div>
+      <button class="btn btn-d btn-sm" onclick="removerArquivo('${id}',${i})">✕</button>
+    </div>`).join('');
+  totalEl.textContent=lista.length+' arquivo(s) · '+lista.reduce((s,a)=>s+a.linhas,0)+' linha(s) total';
+}
+function atualizarDicaEscala(){
+  const sel=document.getElementById('esc-dia');
+  const dica=document.getElementById('dica-escala');
+  if(dica)dica.style.display=sel&&!sel.value?'block':'none';
+}
+
+function verificarEscalaAntes(id){
+  const sel=document.getElementById('esc-dia');
+  if(!sel?.value){
+    // avisa e destaca o select
+    const dica=document.getElementById('dica-escala');
+    if(dica)dica.style.display='block';
+    sel.style.borderColor='var(--amber)';
+    sel.focus();
+    setTimeout(()=>{if(sel)sel.style.borderColor='';},2000);
+    return;
+  }
+  document.getElementById('f-ros').click();
+}
+
+function removerArquivo(id,i){
+  _arquivos[id].splice(i,1);
+  renderFilesPanel(id);
+  atualizarStatusImport();
+}
+function limparArquivos(id){_arquivos[id]=[];renderFilesPanel(id);atualizarStatusImport();}
+
+function confirmarRostering(){
+  if(!_arquivos.ros.length){alert('Adicione pelo menos um arquivo de rostering.');return;}
+  // passa cada arquivo com sua própria escala
+  processCSVRosMulti(_arquivos.ros);
+  salvarLS();
+  atualizarStatusImport();showIT('pre');
+}
+function confirmarPresenca(){
+  if(!_arquivos.pre.length){alert('Adicione pelo menos um arquivo de presenças.');return;}
+  processCSVPreMulti(_arquivos.pre.map(a=>a.txt));
+  salvarLS();
+  atualizarStatusImport();
+}
+function atualizarStatusImport(){
+  const wrap=document.getElementById('imp-status');
+  const rosOk=rostering.length>0,preOk=presenca.length>0;
+  if(wrap)wrap.style.display=(rosOk||preOk)?'block':'none';
+  const stRos=document.getElementById('imp-st-ros');
+  const stPre=document.getElementById('imp-st-pre');
+  if(stRos){stRos.textContent=rosOk?rostering.length+' pessoa(s)':'—';stRos.style.color=rosOk?'var(--green)':'var(--muted)';}
+  if(stPre){stPre.textContent=preOk?presenca.length+' pessoa(s)':'—';stPre.style.color=preOk?'var(--green)':'var(--muted)';}
+}
+function resetImport(){
+  if(!confirm('Limpar todos os arquivos e dados da sessão atual?'))return;
+  _arquivos.ros=[];_arquivos.pre=[];
+  rostering=[];presenca=[];validados=[];calcAtual=null;
+  renderFilesPanel('ros');renderFilesPanel('pre');
+  atualizarStatusImport();
+  sessionStorage.removeItem(LS+'_sess');
+  showIT('ros');
+}
+
+function parseDataBR(s){
+  if(!s)return null;s=s.trim();
+  const m=s.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);
+  const m2=s.match(/^(\d{4})-(\d{2})-(\d{2})$/);if(m2)return new Date(+m2[1],+m2[2]-1,+m2[3]);
+  return null;
+}
+function processCSVRosMulti(arquivos){
+  // aceita array de {txt, escalaId, escalaNome} ou array de strings (compat)
+  const dataRefInput=document.getElementById('ros-data-ref').value||document.getElementById('data-global').value;
+  const dataRef=dataRefInput?new Date(dataRefInput+'T12:00:00'):null;
+
+  const vistos=new Set();let filtrados=0;rostering=[];
+  const semEscala=new Set();
+
+  arquivos.forEach(arq=>{
+    const txt=typeof arq==='string'?arq:arq.txt;
+    // escala: usa a do arquivo, senão a do select atual como fallback
+    const eidArq=typeof arq==='object'?arq.escalaId:null;
+    const eidFallback=eidArq||(parseInt(document.getElementById('esc-dia')?.value)||null);
+    const escFallback=eidFallback?escalas.find(e=>e.id===eidFallback):null;
+
+    const {idx,rows}=mapearColunas(txt);
+    const linhas=txt.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n').filter(Boolean);
+    const sep=detectSep(linhas);
+    const cab=linhas[0].toLowerCase().split(sep).map(c=>c.trim().replace(/^"|"$/g,''));
+    const iInicio=cab.findIndex(c=>c.includes('início')||c.includes('inicio')||c.includes('data de in'));
+    const iTermino=cab.findIndex(c=>c.includes('término')||c.includes('termino')||c.includes('data de t'));
+
+    rows.forEach(cols=>{
+      const p=extrairPessoa(cols,idx);if(!p.nome)return;
+
+      if(dataRef&&iInicio>=0&&iTermino>=0){
+        const ini=parseDataBR(cols[iInicio]),ter=parseDataBR(cols[iTermino]);
+        if(ini&&ter&&!(dataRef>=ini&&dataRef<=ter)){filtrados++;return;}
+      }
+
+      const chave=p.idGroot||norm(p.nome);
+      if(vistos.has(chave))return;vistos.add(chave);
+
+      let escalaId=null,escalaNome='Não informada',escalaVeioDoArquivo=false;
+      if(p.escala){
+        const escMatch=resolverEscalaId(p.escala);
+        if(escMatch){
+          escalaId=escMatch;
+          escalaNome=escalas.find(e=>e.id===escMatch)?.nome||p.escala;
+          escalaVeioDoArquivo=true;
+        } else {
+          semEscala.add(p.escala);
+          if(eidFallback){escalaId=eidFallback;escalaNome=escFallback?.nome||'—';}
+          else escalaNome=p.escala+' (não reconhecida)';
+        }
+      } else if(eidFallback){
+        // usa a escala salva no arquivo (selecionada quando foi adicionado)
+        escalaId=eidFallback;escalaNome=escFallback?.nome||'—';
+      }
+
+      rostering.push({nome:p.nome,idGroot:p.idGroot,ldpa:p.ldpa,escalaId,escalaNome,escalaVeioDoArquivo});
+    });
+  });
+}
+function processCSVPreMulti(txts){
+  const vistos=new Set();presenca=[];
+  txts.forEach(txt=>{
+    const {idx,rows}=mapearColunas(txt);
+    rows.forEach(cols=>{
+      const get=(i)=>i>=0&&i<cols.length?cols[i].trim():'';
+      const idGroot=get(idx.id);
+      const ldpa=get(idx.ldpa);
+      const nome=get(idx.nome);
+      // precisa de pelo menos um identificador
+      if(!idGroot&&!ldpa&&!nome)return;
+      // deduplicação: prioriza GROOT ID, depois LDPA, depois nome
+      const chave=idGroot||norm(ldpa)||norm(nome);
+      if(vistos.has(chave))return;
+      vistos.add(chave);
+      presenca.push({nome,idGroot,ldpa});
+    });
+  });
+}
+function processCSVRos(txt){processCSVRosMulti([txt]);}
+function processCSVPre(txt){processCSVPreMulti([txt]);}
+
+// ══ TIPO POR NOME/ID ════════════════════════════════════
+function tipoCadastro(nome,idGroot,ldpa){
+  const nn=norm(nome);
+  // busca por GROOT ID primeiro (mais confiável), depois LDPA, depois nome
+  const matchLF=logFull.find(p=>
+    (idGroot&&p.idGroot&&String(p.idGroot)===String(idGroot))||
+    (ldpa&&p.ldpa&&norm(p.ldpa)===norm(ldpa))||
+    (nn&&norm(p.nome)===nn)
+  );
+  if(matchLF)return{cat:'logfull',subtipo:matchLF.tipo||'FT'};
+  const matchDI=diaristas.find(p=>
+    (idGroot&&p.idGroot&&String(p.idGroot)===String(idGroot))||
+    (ldpa&&p.ldpa&&norm(p.ldpa)===norm(ldpa))||
+    (nn&&norm(p.nome)===nn)
+  );
+  if(matchDI)return{cat:'diarista',subtipo:'DI'};
+  return{cat:'desconhecido',subtipo:'?'};
+}
+
+// ══ CRUZAMENTO ═════════════════════════════════════════
+function cruzar(){
+  if(!rostering.length&&!presenca.length){alert('Importe o rostering e o LMS primeiro.');return;}
+  validados=[];
+
+  const mesma=(a,b)=>{
+    if(a.idGroot&&b.idGroot&&String(a.idGroot)===String(b.idGroot))return true;
+    if(a.ldpa&&b.ldpa&&norm(a.ldpa)===norm(b.ldpa))return true;
+    if(a.nome&&b.nome&&norm(a.nome)===norm(b.nome))return true;
+    return false;
+  };
+
+  const dataRef=document.getElementById('data-global')?.value||'';
+
+  rostering.forEach(p=>{
+    const naP=presenca.some(x=>mesma(p,x));
+    const tc=tipoCadastro(p.nome,p.idGroot,p.ldpa);
+
+    // verifica se a escala desta pessoa está em DSR hoje
+    // usa escalaId do rostering (arquivo) ou do cadastro
+    let escalaIdPessoa=p.escalaId;
+    if(!escalaIdPessoa&&tc.cat==='logfull'){
+      const cad=logFull.find(lf=>{
+        const chave=String(p.idGroot||'').trim()||norm(p.nome||'');
+        return String(lf.idGroot||'').trim()===chave
+            ||norm(lf.ldpa||'')===norm(p.ldpa||'')
+            ||norm(lf.nome)===norm(p.nome||'');
+      });
+      if(cad)escalaIdPessoa=cad.escalaId;
+    }
+    const escPessoa=escalas.find(e=>e.id===escalaIdPessoa);
+    const pessoaEmDSR=!naP&&escPessoa&&escalaEmDSR(escPessoa,dataRef);
+
+    // detecta escala errada
+    let escalaErrada=false;
+    let escalaCadastro=null, escalaCadastroNome='—';
+    if(tc.cat==='logfull'){
+      const cad=logFull.find(lf=>{
+        const chave=String(p.idGroot||'').trim()||norm(p.nome||'');
+        return String(lf.idGroot||'').trim()===chave
+            ||norm(lf.ldpa||'')===norm(p.ldpa||'')
+            ||norm(lf.nome)===norm(p.nome||'');
+      });
+      if(cad){
+        escalaCadastro=cad.escalaId;
+        escalaCadastroNome=escalas.find(e=>e.id===cad.escalaId)?.nome||'—';
+        if(p.escalaVeioDoArquivo&&p.escalaId&&cad.escalaId&&p.escalaId!==cad.escalaId){
+          escalaErrada=true;
+        }
+      }
+    }
+
+    // situação: confirmado / dsr (folga programada) / falta
+    let situacao;
+    if(naP) situacao='confirmado';
+    else if(pessoaEmDSR) situacao='dsr';
+    else situacao='falta';
+
+    validados.push({
+      ...p,...tc,
+      situacao,
+      origem:'rostering',
+      rosterPendente:false,
+      escalaErrada,
+      escalaCadastro,
+      escalaCadastroNome,
+      escalaHCMId:p.escalaId,
+      escalaHCMNome:p.escalaNome,
+    });
+  });
+
+  presenca.forEach(p=>{
+    const noR=rostering.some(x=>mesma(p,x));
+    if(!noR){
+      const tc=tipoCadastro(p.nome,p.idGroot,p.ldpa);
+      if(tc.cat==='desconhecido'){
+        validados.push({...p,...tc,escalaId:null,escalaNome:'—',situacao:'soro',origem:'presenca',rosterPendente:false});
+      } else {
+        let escalaId=null, escalaNome='—';
+        if(tc.cat==='logfull'){
+          const cad=logFull.find(lf=>{
+            const chave=String(p.idGroot||'').trim()||norm(p.nome||'');
+            return String(lf.idGroot||'').trim()===chave||norm(lf.ldpa||'')===norm(p.ldpa||'')||norm(lf.nome)===norm(p.nome||'');
+          });
+          if(cad){escalaId=cad.escalaId;escalaNome=escalas.find(e=>e.id===cad.escalaId)?.nome||'—';}
+        }
+        validados.push({...p,...tc,escalaId,escalaNome,situacao:'confirmado',origem:'presenca',rosterPendente:true});
+      }
+    }
+  });
+  showTab('val');renderStats();renderVal();salvarLS();
+}
+
+// ══ VALIDAÇÃO RENDER ════════════════════════════════════
+function setF(f,btn){filtro=f;document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderVal();}
+function renderStats(){
+  if(!validados.length)return;
+
+  // números gerais
+  const rosQty=rostering.length;
+  const conf=validados.filter(p=>p.situacao==='confirmado').length;
+  const abs=validados.filter(p=>p.situacao==='falta').length;
+  const soro=validados.filter(p=>p.situacao==='soro').length;
+  const dc=validados.filter(p=>p.cat==='desconhecido').length;
+
+  document.getElementById('sv-ros').textContent=rosQty;
+  document.getElementById('sv-conf').textContent=conf;
+  document.getElementById('sv-abs').textContent=abs;
+  document.getElementById('sv-soro').textContent=soro;
+  document.getElementById('sv-dc').textContent=dc;
+  document.getElementById('b-val').textContent=validados.length;
+
+  const dsrPessoas=validados.filter(p=>p.situacao==='dsr');
+  const fbDsr=document.getElementById('fb-dsr');
+  const cntDsr=document.getElementById('cnt-dsr');
+  if(fbDsr){
+    fbDsr.style.display=dsrPessoas.length?'':'none';
+    if(cntDsr)cntDsr.textContent='('+dsrPessoas.length+')';
+  }
+
+  const justificados=validados.filter(p=>p.situacao==='justificado');
+  const fbJust=document.getElementById('fb-just');
+  const cntJust=document.getElementById('cnt-just');
+  if(fbJust){
+    fbJust.style.display=justificados.length?'':'none';
+    if(cntJust)cntJust.textContent='('+justificados.length+')';
+  }
+
+  // alerta gap geral — só escalas que operam hoje (excluindo DSR)
+  const dataRef=document.getElementById('data-global')?.value||'';
+  const escalaOperando=escalasAtivas().filter(e=>!escalaEmDSR(e,dataRef));
+  const schedTot=escalaOperando.reduce((s,e)=>s+e.qty,0);
+  const gapGeral=Math.max(0,schedTot-rosQty);
+  const gEl=document.getElementById('al-gap');
+  if(gapGeral>0){
+    gEl.classList.add('show');
+    document.getElementById('al-gap-t').innerHTML=`<strong>Gap de quadro geral: ${gapGeral} pessoa(s)</strong> — Scheduling (${schedTot}) > Rostering (${rosQty}). O 3PL deve suprir com diaristas.`;
+  } else gEl.classList.remove('show');
+
+  // botão e alerta de roster pendente
+  const pendentes=validados.filter(p=>p.rosterPendente);
+  const fbPend=document.getElementById('fb-pendente');
+  const cntPend=document.getElementById('cnt-pendente');
+  if(fbPend){
+    fbPend.style.display=pendentes.length?'':'none';
+    if(cntPend)cntPend.textContent='('+pendentes.length+')';
+  }
+
+  // alerta visual de roster pendente
+  let alertPend=document.getElementById('al-pend');
+  if(pendentes.length){
+    if(!alertPend){
+      alertPend=document.createElement('div');
+      alertPend.id='al-pend';
+      alertPend.className='alert aw';
+      alertPend.innerHTML='<div class="aico">⚠</div><div class="atxt" id="al-pend-t"></div>';
+      const alDc=document.getElementById('al-dc');
+      if(alDc)alDc.parentNode.insertBefore(alertPend,alDc.nextSibling);
+    }
+    alertPend.classList.add('show');
+    document.getElementById('al-pend-t').innerHTML=
+      `<strong>${pendentes.length} pessoa(s) presentes no LMS sem rostering</strong> — contabilizadas normalmente. O 3PL tem até 5 dias para regularizar o rostering. `+
+      `<span style="color:var(--amber)">${pendentes.map(p=>`<strong>${p.nome||p.idGroot}</strong>`).join(', ')}</span>`;
+  } else if(alertPend){
+    alertPend.classList.remove('show');
+  }
+
+  // ── alerta escala errada ────────────────────────────
+  const escalaErrada=validados.filter(p=>p.escalaErrada);
+  let alertEsc=document.getElementById('al-esc-errada');
+  if(escalaErrada.length){
+    if(!alertEsc){
+      alertEsc=document.createElement('div');
+      alertEsc.id='al-esc-errada';
+      alertEsc.className='alert';
+      alertEsc.style.cssText='border:1px solid var(--purple);background:var(--pbg);';
+      alertEsc.innerHTML='<div class="aico">🔀</div><div class="atxt" id="al-esc-errada-t"></div>';
+      const alDc=document.getElementById('al-dc');
+      if(alDc)alDc.parentNode.insertBefore(alertEsc,alDc.nextSibling);
+    }
+    alertEsc.classList.add('show');
+    document.getElementById('al-esc-errada-t').innerHTML=
+      `<strong style="color:var(--purple)">${escalaErrada.length} pessoa(s) rosterizada(s) em escala diferente do cadastro</strong> — contabilizada(s) nas duas escalas:<br>`+
+      escalaErrada.map(p=>`<span style="color:var(--purple)">▸ <strong>${p.nome||p.idGroot}</strong> — HCM: <strong>${p.escalaHCMNome||'?'}</strong> · Cadastro: <strong>${p.escalaCadastroNome||'?'}</strong></span>`).join('<br>');
+  } else if(alertEsc){
+    alertEsc.classList.remove('show');
+  }
+  const fbEscErrada=document.getElementById('fb-esc-errada');
+  const cntEscErrada=document.getElementById('cnt-esc-errada');
+  if(fbEscErrada){
+    fbEscErrada.style.display=escalaErrada.length?'':'none';
+    if(cntEscErrada)cntEscErrada.textContent='('+escalaErrada.length+')';
+  }
+
+  const descs=validados.filter(p=>p.cat==='desconhecido');
+  if(descs.length){
+    dEl.classList.add('show');
+    document.getElementById('al-dc-t').innerHTML=`<strong>${descs.length} sem cadastro</strong>: `+descs.map(p=>`<strong>${p.nome||p.idGroot}</strong>`).join(', ')+'.';
+  } else dEl.classList.remove('show');
+
+  // ── BLOCO POR ESCALA NA VALIDAÇÃO ──────────────────
+  const valPorEscalaEl=document.getElementById('val-por-escala');
+  if(valPorEscalaEl&&escalas.length){
+    // usa o mesmo calcMELI para obter dados por escala
+    const c=calcMELI();
+    if(!c||!c.porEscala){return;}
+
+    valPorEscalaEl.innerHTML=c.porEscala.map(e=>{
+      const tipoCor=e.tipo==='FT'?'var(--green)':'var(--teal)';
+      const tipoPill=e.tipo==='FT'?'<span class="pill p-ft">FT</span>':'<span class="pill p-pt">PT</span>';
+      const temProblema=e.gap>0||e.abs>0;
+      const coberto=(e.cobGap+e.cobAbs)>=e.necessidade;
+      const statusTxt=!temProblema?'✓ quadro completo':coberto?'✓ coberto':'⚠ cobertura parcial';
+      const statusCor=!temProblema?'var(--green)':coberto?'var(--amber)':'var(--red)';
+
+      // mini tabela de pessoas por escala (presentes + faltas)
+      const todosDaEscala=[...e.pessoasPres,...e.pessoasAbs];
+
+      return`<div style="margin-bottom:10px;border:1px solid ${temProblema?'var(--amber)':'var(--border)'};border-radius:7px;overflow:hidden;background:var(--bg3);">
+        <!-- cabeçalho da escala -->
+        <div style="padding:8px 12px;display:flex;align-items:center;gap:8px;background:var(--bg2);border-bottom:1px solid var(--border);">
+          ${tipoPill}
+          <span style="font-size:13px;font-weight:600;">${e.esc.nome}</span>
+          <span style="font-family:var(--mono);font-size:10px;color:${statusCor};margin-left:auto;">${statusTxt}</span>
+        </div>
+        <!-- métricas compactas -->
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border);">
+          ${[
+            ['Sched',e.sched,'var(--a2)'],
+            ['Roster',e.ros,'var(--a2)'],
+            ['MELI',e.meli,tipoCor],
+            ['Presentes',e.pres,'var(--green)'],
+            ['ABS',e.abs,e.abs>0?'var(--red)':'var(--muted)'],
+            ['Gap',e.gap,e.gap>0?'var(--amber)':'var(--muted)'],
+            ['Cob. Di.',e.cobTotal,e.cobTotal>0?'var(--cyan)':'var(--muted)'],
+          ].map(([lbl,val,cor])=>`
+            <div style="flex:1;padding:7px 8px;border-right:1px solid var(--border);text-align:center;min-width:0;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:1px;white-space:nowrap;">${lbl}</div>
+              <div style="font-family:var(--mono);font-size:14px;font-weight:600;color:${cor}">${val}</div>
+            </div>`).join('')}
+          <div style="flex:1;padding:7px 8px;text-align:center;">
+            <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:1px;">MELI fin.</div>
+            <div style="font-family:var(--mono);font-size:14px;font-weight:600;color:${tipoCor}">${e.meli}</div>
+          </div>
+        </div>
+        <!-- pessoas desta escala -->
+        ${todosDaEscala.length?`
+        <div style="max-height:160px;overflow-y:auto;">
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;">Nome</th>
+              <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;">ID Groot</th>
+              <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;">Situação</th>
+            </tr></thead>
+            <tbody>${todosDaEscala.map(p=>{
+              const sp=p.situacao==='confirmado'?'<span class="pill p-ok">✓</span>':'<span class="pill p-fa">✗ FALTA</span>';
+              return`<tr style="${p.situacao==='falta'?'background:var(--rbg)':''}">
+                <td style="padding:4px 10px;font-size:11px;border-bottom:1px solid var(--border)">${p.nome||'—'}</td>
+                <td style="padding:4px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.idGroot||'—'}</td>
+                <td style="padding:4px 10px;border-bottom:1px solid var(--border)">${sp}</td>
+              </tr>`;
+            }).join('')}</tbody>
+          </table>
+        </div>`:'<div style="padding:8px 12px;font-size:11px;color:var(--muted);">Nenhum membro desta escala no rostering.</div>'}
+        ${(temProblema)?`<div style="padding:6px 12px;border-top:1px solid var(--border);font-size:11px;color:${coberto?'var(--amber)':'var(--red)'};font-family:var(--mono);display:flex;flex-wrap:wrap;gap:10px;">
+          ${e.gap>0?`<span style="color:var(--amber)">Gap ${e.gap} → ${e.cobGap} cob. [3PL, fat. como ${e.tipo}]</span>`:''}
+          ${e.abs>0?`<span style="color:var(--a2)">%ABS: ${e.pctAbs}% | CAP: ${e.capPct}%</span>`:''}
+          ${e.absMeliQty>0?`<span style="color:var(--green)">MELI: ${e.cobAbsMeli} di.</span>`:''}
+          ${e.abs3plQty>0?`<span style="color:var(--red)">3PL: ${e.cobAbs3pl} di.</span>`:''}
+          ${(e.cobGap+e.cobAbsMeli+e.cobAbs3pl)<e.necessidade?`<span style="font-weight:600">⚠ faltam ${e.necessidade-(e.cobGap+e.cobAbsMeli+e.cobAbs3pl)}</span>`:''}
+        </div>`:''}
+      </div>`;
+    }).join('');
+  }
+}
+function renderVal(){
+  const q=(document.getElementById('s-val')?.value||'').toLowerCase();
+  const fil=validados.filter(p=>{
+    const mf=filtro==='todos'||p.situacao===filtro
+      ||(filtro==='soro'&&p.cat==='desconhecido'&&p.situacao==='soro')
+      ||(filtro==='pendente'&&p.rosterPendente)
+      ||(filtro==='escalaErrada'&&p.escalaErrada)
+      ||(filtro==='dsr'&&p.situacao==='dsr')
+      ||(filtro==='justificado'&&p.situacao==='justificado')
+      ||(filtro==='desconhecido'&&p.cat==='desconhecido');
+    const mq=!q||norm(p.nome||'').includes(q)||(p.ldpa||'').toLowerCase().includes(q)||(p.idGroot||'').includes(q);
+    return mf&&mq;
+  });
+  const tb=document.getElementById('tb-val');
+  if(!fil.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty"><div class="empty-i">🔍</div><div class="empty-t">Nenhum resultado</div></div></td></tr>`;return;}
+  tb.innerHTML=fil.map(p=>{
+    const rc=p.situacao==='falta'?'rfa':p.cat==='desconhecido'&&p.situacao==='soro'?'rso':p.cat==='desconhecido'?'rdc':'';
+    const tp=p.cat==='logfull'?(p.subtipo==='PT'?'<span class="pill p-pt">PT</span>':'<span class="pill p-ft">FT</span>'):p.cat==='diarista'?'<span class="pill p-di">DIARISTA</span>':'<span class="pill p-dc">SEM CAD.</span>';
+    const pendTag=p.rosterPendente?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:#2a1e08;color:var(--amber);margin-left:4px;">⚠ roster pendente</span>`:'';
+    const escTag=p.escalaErrada?`<span style="font-family:var(--mono);font-size:9px;padding:1px 5px;border-radius:3px;background:var(--pbg);color:var(--purple);border:1px solid #3d1a6e;margin-left:4px;" title="HCM: ${p.escalaHCMNome||'?'} · Cadastro: ${p.escalaCadastroNome||'?'}">🔀 escala divergente</span>`:'';
+    const escNomeExib=p.escalaErrada
+      ?`<span style="color:var(--purple)">${p.escalaHCMNome||'?'}</span> <span style="font-size:10px;color:var(--muted)">/ cad: ${p.escalaCadastroNome||'?'}</span>`
+      :(p.escalaNome||p.escalaCadastroNome||'—');
+    const sp=p.situacao==='confirmado'
+      ?`<span class="pill p-ok">CONFIRMADO</span>${pendTag}${escTag}`
+      :p.situacao==='falta'?'<span class="pill p-fa">FALTA</span>'
+      :p.situacao==='dsr'?`<span class="pill" style="background:#1a0d2e;color:var(--purple);border:1px solid #3d1a6e;">DSR</span>`
+      :p.situacao==='justificado'?`<span class="pill" style="background:#0f2030;color:var(--cyan);border:1px solid #1a4060;">✦ ${p.justificativa||'Justificado'}</span>`
+      :p.cat==='desconhecido'?'<span class="pill p-so">SÓ LMS</span>'
+      :'<span class="pill p-so">SÓ LMS</span>';
+    const idx=validados.indexOf(p);
+    return`<tr class="${rc}"${p.escalaErrada?' style="background:#1a0d2e;"':''}><td style="font-weight:500">${p.nome||'—'}</td><td class="msm">${p.idGroot||'—'}</td><td class="msm">${p.ldpa||'—'}</td><td>${tp}</td><td class="msm">${escNomeExib}</td><td>${sp}</td><td><button class="btn btn-o btn-sm" onclick="togS(${idx})">Alterar</button></td></tr>`;
+  }).join('');
+}
+function togS(i){
+  // abre modal inline de justificativa
+  const p=validados[i];
+  abrirJustificativa(i,p);
+}
+
+function abrirJustificativa(i,p){
+  // remove modal anterior
+  const old=document.getElementById('modal-just');if(old)old.remove();
+
+  const modal=document.createElement('div');
+  modal.id='modal-just';
+  modal.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;display:flex;align-items:center;justify-content:center;';
+
+  const temJust=p.justificativa||'';
+  const opts=MOTIVOS_JUST.map(m=>`<option value="${m}"${temJust===m?' selected':''}>${m}</option>`).join('');
+
+  modal.innerHTML=`
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px 22px;min-width:340px;max-width:480px;width:90%;">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Justificativa de ausência</div>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:14px;font-family:var(--mono);">${p.nome||p.idGroot}</div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button onclick="aplicarJust(${i},'confirmado','')" style="padding:9px 12px;border-radius:6px;border:1px solid var(--gbg);background:var(--gbg);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
+          ✓ Confirmado — estava presente
+        </button>
+        <button onclick="aplicarJust(${i},'falta','')" style="padding:9px 12px;border-radius:6px;border:1px solid var(--rbg);background:var(--rbg);color:var(--red);font-size:12px;font-weight:600;cursor:pointer;text-align:left;">
+          ✗ Falta — ABS (entra no cálculo)
+        </button>
+
+        <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:2px;">
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;">Ausência justificada — não conta como ABS</div>
+          <div style="display:flex;gap:7px;">
+            <select id="just-motivo" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--text);padding:6px 9px;font-size:12px;font-family:var(--mono);outline:none;">
+              <option value="">Selecione o motivo...</option>
+              ${opts}
+            </select>
+            <button onclick="aplicarJustMotivo(${i})" style="padding:6px 12px;border-radius:5px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;">Aplicar</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;text-align:right;">
+        <button onclick="document.getElementById('modal-just').remove()" style="padding:5px 12px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;">Cancelar</button>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal)modal.remove();});
+}
+
+function aplicarJust(i,situacao,justificativa){
+  const p=validados[i];
+  p.situacao=situacao;
+  p.justificativa='';
+  p.ausJustificada=false;
+  document.getElementById('modal-just')?.remove();
+  calcAtual=calcMELI();
+  renderStats();renderVal();salvarLS();
+}
+
+function aplicarJustMotivo(i){
+  const motivo=document.getElementById('just-motivo')?.value;
+  if(!motivo){alert('Selecione um motivo.');return;}
+  const p=validados[i];
+  p.situacao='justificado';    // nova situação — não é falta, não é confirmado
+  p.justificativa=motivo;
+  p.ausJustificada=true;
+  document.getElementById('modal-just')?.remove();
+  calcAtual=calcMELI();
+  renderStats();renderVal();salvarLS();
+}
+
+// ══ CÁLCULO MELI ════════════════════════════════════════
+
+// ══ FATURA ═════════════════════════════════════════════
+// ── Bloco de resumo para lançamento ───────────────────
+function renderResumoLancamento(c){
+  const ftPresentes    = c.presFT;
+  const ftCobExc       = (c.excCobGapFT||0)+(c.excCobAbsFT||0);
+  const ftCobDiGap     = c.diCobGapFT||0;
+  const ftTotal        = c.meliFT;
+
+  const ptPresentes    = c.presPT;
+  const ptCobExc       = (c.excCobGapPT||0)+(c.excCobAbsPT||0);
+  const ptCobDiGap     = c.diCobGapPT||0;
+  const ptTotal        = c.meliPT;
+
+  const diTC           = c.diTC;
+  const diCobGap       = (c.diCobGapFT||0)+(c.diCobGapPT||0);
+  const diCobAbsMeli   = (c.diCobAbsFT_mel||0)+(c.diCobAbsPT_mel||0);
+  const diCobAbs3pl    = (c.diCobAbsFT||0)+(c.diCobAbsPT||0);
+  const diFat          = c.diFat||0;
+  const totalMeli      = ftTotal+ptTotal+diFat+diCobAbsMeli;
+
+  // ── helper: tag de obs ──────────────────────────────
+  const tag=(txt,cor,bg)=>`<span style="font-size:10px;font-family:var(--mono);padding:2px 7px;border-radius:3px;background:${bg};color:${cor};white-space:nowrap;">${txt}</span>`;
+
+  // ── BLOCO FT ────────────────────────────────────────
+  const elFT=document.getElementById('fat-resumo-ft');
+  if(elFT){
+    const obsItems=[];
+    if(ftCobExc>0)    obsItems.push(tag(`+${ftCobExc} excedente roster (gap)`, '#fb923c', '#2a1508'));
+    if(ftCobDiGap>0)  obsItems.push(tag(`+${ftCobDiGap} diarista p/ gap · 3PL`, 'var(--amber)', 'var(--abg)'));
+    if(c.absFT>0){
+      if(c.diCobAbsFT_mel>0) obsItems.push(tag(`${c.diCobAbsFT_mel} cob. ABS · MELI`, 'var(--green)', 'var(--gbg)'));
+      if(c.diCobAbsFT>0)     obsItems.push(tag(`${c.diCobAbsFT} cob. ABS · 3PL`, 'var(--red)', 'var(--rbg)'));
+    }
+
+    elFT.innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:14px 16px;gap:12px;">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span class="pill p-ft" style="font-size:11px;padding:3px 10px;">FULL TIME</span>
+          <span style="font-size:12px;color:var(--muted);">Quadro presente + coberturas</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green);margin-bottom:6px;">
+          ${ftPresentes} presentes
+          ${ftCobExc>0||ftCobDiGap>0?`<span style="font-size:14px;color:var(--muted);font-weight:400;margin:0 4px;">+</span><span style="font-size:18px;color:var(--amber)">${ftCobExc+ftCobDiGap} cobertura</span>`:''}
+          <span style="font-size:14px;color:var(--muted);font-weight:400;margin:0 6px;">=</span>
+          <span style="color:var(--green)">${ftTotal} a lançar</span>
+        </div>
+        ${obsItems.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;">${obsItems.join('')}</div>`:''}
+        ${c.absFT>0?`<div style="margin-top:6px;font-size:11px;color:var(--muted);">
+          <span style="color:var(--red)">▼ ${c.absFT} ABS</span>
+          ${c.gapFT>0?`<span style="color:var(--amber);margin-left:8px;">▼ ${c.gapFT} Gap de quadro</span>`:''}
+        </div>`:''}
+      </div>
+      <div style="text-align:center;min-width:80px;">
+        <div style="font-family:var(--mono);font-size:36px;font-weight:700;color:var(--green);line-height:1">${ftTotal}</div>
+        <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-top:3px;">MELI</div>
+      </div>
+    </div>`;
+  }
+
+  // ── BLOCO PT ────────────────────────────────────────
+  const elPT=document.getElementById('fat-resumo-pt');
+  if(elPT){
+    if(ptTotal===0&&ptPresentes===0&&(c.schedPT||0)===0){
+      elPT.innerHTML=`<div style="padding:10px 16px;display:flex;align-items:center;gap:8px;">
+        <span class="pill p-pt" style="font-size:11px;padding:3px 10px;">PART TIME</span>
+        <span style="font-size:12px;color:var(--muted);">Sem Part Time configurado no dia.</span>
+      </div>`;
+    } else {
+      const obsItemsPT=[];
+      if(ptCobExc>0)   obsItemsPT.push(tag(`+${ptCobExc} excedente roster (gap)`, '#fb923c', '#2a1508'));
+      if(ptCobDiGap>0) obsItemsPT.push(tag(`+${ptCobDiGap} diarista p/ gap · 3PL`, 'var(--amber)', 'var(--abg)'));
+      if(c.absPT>0){
+        if(c.diCobAbsPT_mel>0) obsItemsPT.push(tag(`${c.diCobAbsPT_mel} cob. ABS · MELI`, 'var(--green)', 'var(--gbg)'));
+        if(c.diCobAbsPT>0)     obsItemsPT.push(tag(`${c.diCobAbsPT} cob. ABS · 3PL`, 'var(--red)', 'var(--rbg)'));
+      }
+      elPT.innerHTML=`
+      <div style="display:grid;grid-template-columns:1fr auto;align-items:center;padding:14px 16px;gap:12px;">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+            <span class="pill p-pt" style="font-size:11px;padding:3px 10px;">PART TIME</span>
+            <span style="font-size:12px;color:var(--muted);">Quadro presente + coberturas</span>
+          </div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--teal);margin-bottom:6px;">
+            ${ptPresentes} presentes
+            ${ptCobExc>0||ptCobDiGap>0?`<span style="font-size:14px;color:var(--muted);font-weight:400;margin:0 4px;">+</span><span style="font-size:18px;color:var(--amber)">${ptCobExc+ptCobDiGap} cobertura</span>`:''}
+            <span style="font-size:14px;color:var(--muted);font-weight:400;margin:0 6px;">=</span>
+            <span style="color:var(--teal)">${ptTotal} a lançar</span>
+          </div>
+          ${obsItemsPT.length?`<div style="display:flex;flex-wrap:wrap;gap:5px;">${obsItemsPT.join('')}</div>`:''}
+          ${c.absPT>0?`<div style="margin-top:6px;font-size:11px;color:var(--muted);">
+            <span style="color:var(--red)">▼ ${c.absPT} ABS</span>
+            ${c.gapPT>0?`<span style="color:var(--amber);margin-left:8px;">▼ ${c.gapPT} Gap de quadro</span>`:''}
+          </div>`:''}
+        </div>
+        <div style="text-align:center;min-width:80px;">
+          <div style="font-family:var(--mono);font-size:36px;font-weight:700;color:var(--teal);line-height:1">${ptTotal}</div>
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-top:3px;">MELI</div>
+        </div>
+      </div>`;
+    }
+  }
+
+  // ── BLOCO DIARISTAS ──────────────────────────────────
+  const elDI=document.getElementById('fat-resumo-di');
+  if(elDI){
+    const diMeliTotal=diFat+diCobAbsMeli;
+    const di3plTotal=diCobGap+diCobAbs3pl;
+    elDI.innerHTML=`
+    <div style="padding:14px 16px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <span class="pill p-di" style="font-size:11px;padding:3px 10px;">DIARISTAS</span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">${diTC} presentes no LMS</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+
+        <!-- Coluna responsabilidade 3PL -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;overflow:hidden;">
+          <div style="padding:7px 12px;background:var(--rbg);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;font-weight:600;color:var(--red);">Responsabilidade 3PL</span>
+            <span style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--red);">${di3plTotal}</span>
+          </div>
+          ${diCobGap>0?`<div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--amber);">Cobertura de Gap</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:1px;">Somado ao FT/PT · fatura como FT/PT</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--amber);">${diCobGap}</span>
+          </div>`:''}
+          ${diCobAbs3pl>0?`<div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--red);">Cobertura de ABS</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:1px;">Excede CAP (${c.capPctGeral||0}%) · fatura como diarista</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--red);">${diCobAbs3pl}</span>
+          </div>`:''}
+          ${di3plTotal===0?`<div style="padding:8px 12px;font-size:11px;color:var(--muted);">Nenhuma cobertura 3PL.</div>`:''}
+        </div>
+
+        <!-- Coluna responsabilidade MELI -->
+        <div style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;overflow:hidden;">
+          <div style="padding:7px 12px;background:var(--gbg);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <span style="font-size:11px;font-weight:600;color:var(--green);">Responsabilidade MELI</span>
+            <span style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--green);">${diMeliTotal}</span>
+          </div>
+          ${diCobAbsMeli>0?`<div style="padding:8px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--green);">Cobertura de ABS</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:1px;">Dentro do CAP (${c.capPctGeral||0}%) · fatura como diarista</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--green);">${diCobAbsMeli}</span>
+          </div>`:''}
+          <div style="padding:8px 12px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-size:12px;font-weight:500;color:var(--cyan);">Diaristas excedente</div>
+              <div style="font-size:10px;color:var(--muted);margin-top:1px;">Após todas as coberturas</div>
+            </div>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--cyan);">${diFat}</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // ── TOTAL ────────────────────────────────────────────
+  const elTot=document.getElementById('fat-resumo-total');
+  const diMeliTotal=diFat+diCobAbsMeli;
+  if(elTot) elTot.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);border-top:2px solid var(--border);">
+      <div style="padding:13px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Lançar FT</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--green)">${ftTotal}</div>
+        ${ftTotal!==ftPresentes?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:2px;">${ftPresentes} pres. + ${ftTotal-ftPresentes} cob.</div>`:''}
+      </div>
+      <div style="padding:13px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Lançar PT</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--teal)">${ptTotal}</div>
+        ${ptTotal!==ptPresentes?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:2px;">${ptPresentes} pres. + ${ptTotal-ptPresentes} cob.</div>`:''}
+      </div>
+      <div style="padding:13px 14px;border-right:1px solid var(--border);text-align:center;">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Lançar Diaristas</div>
+        <div style="font-family:var(--mono);font-size:28px;font-weight:700;color:var(--cyan)">${diMeliTotal}</div>
+        ${diCobAbsMeli>0?`<div style="font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:2px;">${diFat} exc. + ${diCobAbsMeli} cob.ABS</div>`:''}
+      </div>
+      <div style="padding:13px 14px;text-align:center;background:rgba(34,197,94,.06);">
+        <div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Total MELI</div>
+        <div style="font-family:var(--mono);font-size:34px;font-weight:700;color:var(--green)">${totalMeli}</div>
+      </div>
+    </div>`;
+
+  window._resumoFatTxt=
+    `FT: ${ftTotal} (${ftPresentes} presentes${ftCobExc+ftCobDiGap>0?' + '+(ftCobExc+ftCobDiGap)+' cobertura':''})\n`+
+    (ptTotal>0?`PT: ${ptTotal} (${ptPresentes} presentes${ptCobExc+ptCobDiGap>0?' + '+(ptCobExc+ptCobDiGap)+' cobertura':''})\n`:'')+
+    `Diaristas MELI: ${diMeliTotal} (${diFat} exc. + ${diCobAbsMeli} cob.ABS CAP)\n`+
+    `Diaristas 3PL: ${diCobGap+diCobAbs3pl} (${diCobGap} gap + ${diCobAbs3pl} ABS excede CAP)\n`+
+    `TOTAL MELI: ${totalMeli}`;
+}
+
+function copiarResumoFatura(){
+  navigator.clipboard.writeText(window._resumoFatTxt||'').then(()=>{
+    const b=document.getElementById('btn-copy-fat-resumo');
+    if(b){b.textContent='Copiado ✓';setTimeout(()=>b.textContent='Copiar resumo',1800);}
+  });
+}
+
+function gerarFatura(){
+  const c=calcAtual;if(!c)return;
+  const data=document.getElementById('data-global').value;
+  const dtf=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+  document.getElementById('fat-dt').textContent=dtf;
+
+  const set=(id,v,cls)=>{const el=document.getElementById(id);if(!el)return;el.textContent=v;if(cls)el.className='fv '+cls;};
+  const txt=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+
+  // Bloco 1 — HC presente
+  txt('fat-pres-ft', c.presFT);
+  txt('fat-ros-ft2', c.rosFT);
+  txt('fat-pres-pt', c.presPT);
+  txt('fat-ros-pt2', c.rosPT);
+  txt('fat-di-tc2', c.diTC);
+  txt('fat-abs-ft2', c.absFT);
+  txt('fat-gap-ft2', c.gapFT);
+  txt('fat-abs-pt2', c.absPT);
+  txt('fat-gap-pt2', c.gapPT);
+
+  // Bloco DSR
+  const dsrBlock=document.getElementById('fat-dsr-block');
+  const dsrContent=document.getElementById('fat-dsr-content');
+  const dsrLabel=document.getElementById('fat-dsr-label');
+  const escalasDSR=c.escalasDSR||[];
+  const dsrTotal=c.dsrTotal||0;
+  if(dsrBlock){
+    if(escalasDSR.length>0){
+      dsrBlock.style.display='block';
+      if(dsrLabel)dsrLabel.textContent=`${dsrTotal} pessoa(s) de folga`;
+      if(dsrContent){
+        dsrContent.innerHTML=`
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border-bottom:1px solid var(--border);">
+            ${escalasDSR.map(e=>`
+              <div style="padding:12px 16px;border-right:1px solid var(--border);">
+                <div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;">
+                  <span class="pill ${e.tipo==='FT'?'p-ft':'p-pt'}" style="font-size:10px;">${e.tipo}</span>
+                  <span style="font-size:12px;font-weight:600;">${e.esc.nome}</span>
+                </div>
+                <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--purple)">${e.dsr||0}</div>
+                <div style="font-size:10px;color:var(--muted);margin-top:2px;">de ${e.dsrSched||e.sched||0} agendados</div>
+              </div>`).join('')}
+          </div>
+          <div style="padding:10px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--bg3);">
+            <span style="font-size:12px;color:var(--muted);">Total DSR — não entra no cálculo de ABS</span>
+            <span style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--purple)">${dsrTotal} pessoa(s)</span>
+          </div>`;
+      }
+    } else {
+      dsrBlock.style.display='none';
+    }
+  }
+
+  // Bloco Resumo para Lançamento
+  renderResumoLancamento(c);
+  // Bloco CAP ABS
+  const absTotal=c.absFT+c.absPT;
+  const pctAbsStr = (c.pctAbsGeral!=null && !isNaN(c.pctAbsGeral)) ? c.pctAbsGeral+'%' : '0%';
+  const capPctStr = (c.capPctGeral!=null && !isNaN(c.capPctGeral)) ? c.capPctGeral+'%' : '—';
+  const absMeliQtyVal = (c.absMeliGeralQty!=null && !isNaN(c.absMeliGeralQty)) ? c.absMeliGeralQty : 0;
+  txt('fat-pct-abs', pctAbsStr);
+  txt('fat-cap-pct', capPctStr);
+  txt('fat-abs-meli-qty', absMeliQtyVal);
+  txt('fat-abs-3pl-qty', Math.max(0,absTotal-absMeliQtyVal));
+
+  // tabela de faixas de CAP
+  const tabelaEl=document.getElementById('fat-cap-tabela');
+  if(tabelaEl){
+    const faixas=[
+      [0,2.5,2.50],[2.51,5.0,2.00],[5.1,10.0,1.50],
+      [10.1,15.0,1.00],[15.1,20.0,0.50],[20.1,25.0,0.25],[25.1,999,0.00]
+    ];
+    const ativa=faixas.findIndex(([min,max])=>(c.pctAbsGeral||0)>=min&&(c.pctAbsGeral||0)<=max);
+    tabelaEl.innerHTML=`<div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;">Tabela de CAP — faixa ativa destacada</div>
+    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+      ${faixas.map(([min,max,cap],i)=>`
+        <div style="padding:5px 9px;border-radius:4px;border:1px solid ${i===ativa?'var(--accent)':'var(--border)'};background:${i===ativa?'#0d1a2a':'var(--bg3)'};text-align:center;min-width:80px;">
+          <div style="font-size:9px;color:${i===ativa?'var(--a2)':'var(--muted)'};font-family:var(--mono);">${max>=999?'> 25,1%':`${min}% – ${max}%`}</div>
+          <div style="font-family:var(--mono);font-size:13px;font-weight:600;color:${i===ativa?'var(--green)':'var(--muted)'}">CAP ${cap.toFixed(2)}%</div>
+        </div>`).join('')}
+    </div>`;
+  }
+
+  // Bloco 2 — Destino dos diaristas
+  txt('fat-di-total-label', `LMS: ${c.diTC} diarista(s) · Excedente roster: ${(c.excRosterFT||0)+(c.excRosterPT||0)}`);
+
+  // Barra visual proporcional — inclui excedentes
+  const excTotal=(c.excRosterFT||0)+(c.excRosterPT||0);
+  const excUsado=(c.excCobGapFT||0)+(c.excCobGapPT||0)+(c.excCobAbsFT||0)+(c.excCobAbsPT||0);
+  const total=(c.diTC+excTotal)||1;
+  const segs=[
+    {id:'bar-gap-ft', val:(c.excCobGapFT||0)+(c.diCobGapFT||0), label:`Gap FT: ${(c.excCobGapFT||0)+(c.diCobGapFT||0)}`},
+    {id:'bar-gap-pt', val:(c.excCobGapPT||0)+(c.diCobGapPT||0), label:`Gap PT: ${(c.excCobGapPT||0)+(c.diCobGapPT||0)}`},
+    {id:'bar-abs-ft', val:c.diCobAbsFT||0,       label:`ABS FT 3PL: ${c.diCobAbsFT||0}`},
+    {id:'bar-abs-pt', val:c.diCobAbsPT||0,        label:`ABS PT 3PL: ${c.diCobAbsPT||0}`},
+    {id:'bar-fat',    val:c.diFat||0,              label:`Faturável: ${c.diFat||0}`},
+  ];
+  segs.forEach(s=>{
+    const el=document.getElementById(s.id);if(!el)return;
+    const pct=(s.val/total)*100;
+    el.style.flex=s.val>0?String(s.val):'0';
+    el.style.display=s.val>0?'flex':'none';
+    el.textContent=s.val>0?(pct>12?s.label:String(s.val)):'';
+  });
+
+  // Linhas de detalhe dos diaristas
+  const rows=document.getElementById('fat-di-rows');
+  if(rows){
+    const excTotCob=(c.excCobGapFT||0)+(c.excCobGapPT||0)+(c.excCobAbsFT||0)+(c.excCobAbsPT||0);
+    const defs=[
+      {val:(c.excCobGapFT||0)+(c.excCobGapPT||0), label:'Log Full excedente → Cobertura Gap', sub:'rosterizados acima do sched — fatura como FT/PT [resp. 3PL]', cor:'var(--amber)', bg:'#2a1e08'},
+      {val:(c.excCobAbsFT||0)+(c.excCobAbsPT||0), label:'Log Full excedente → Cobertura ABS', sub:'rosterizados acima do sched — fatura como FT/PT [resp. 3PL]', cor:'#fb923c',     bg:'#2a1508'},
+      {val:c.diCobGapFT,      label:'Diaristas LMS → Cobertura Gap FT',            sub:'fatura como Full Time — responsabilidade 3PL',           cor:'#f59e0b', bg:'#2a1e08'},
+      {val:c.diCobGapPT,      label:'Diaristas LMS → Cobertura Gap PT',            sub:'fatura como Part Time — responsabilidade 3PL',           cor:'#2dd4bf', bg:'#072a26'},
+      {val:c.diCobAbsFT_mel||0,  label:'Diaristas LMS → ABS FT — MELI paga',         sub:`CAP ${c.capPctGeral||0}% × MELI FT — faturável MELI`,       cor:'var(--green)', bg:'#0d2a1a'},
+      {val:c.diCobAbsPT_mel||0,  label:'Diaristas LMS → ABS PT — MELI paga',         sub:`CAP ${c.capPctGeral||0}% × MELI PT — faturável MELI`,       cor:'var(--teal)',  bg:'#072a26'},
+      {val:c.diCobAbsFT,      label:'Diaristas LMS → ABS FT — excede CAP',        sub:'acima do CAP — responsabilidade 3PL',                    cor:'var(--red)',   bg:'#2a0d0d'},
+      {val:c.diCobAbsPT,      label:'Diaristas LMS → ABS PT — excede CAP',        sub:'acima do CAP — responsabilidade 3PL',                    cor:'#f87171',     bg:'#1a0d0d'},
+      {val:c.diFat,           label:'Diaristas faturáveis (excedente)',            sub:'após todas as coberturas — faturável MELI',              cor:'var(--cyan)', bg:'#0a2030'},
+    ];
+    rows.innerHTML=defs.filter(d=>d.val>0).map(d=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);">
+        <div style="width:36px;height:36px;border-radius:6px;background:${d.bg};display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:16px;font-weight:700;color:${d.cor};flex-shrink:0">${d.val}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:${d.cor}">${d.label}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px;">${d.sub}</div>
+        </div>
+      </div>`).join('')
+      +(defs.every(d=>d.val===0)?`<div style="padding:12px 16px;font-size:12px;color:var(--muted)">Nenhum diarista no LMS.</div>`:'');
+  }
+
+  // Detalhamento por escala
+  const porEscalaEl=document.getElementById('fat-por-escala');
+  if(porEscalaEl&&c.porEscala){
+    if(!c.porEscala.length){
+      porEscalaEl.innerHTML='<div class="empty"><div class="empty-t">Nenhuma escala configurada.</div></div>';
+    } else {
+      porEscalaEl.innerHTML=`
+        <div style="font-size:11px;color:var(--muted);margin-bottom:12px;font-family:var(--mono);">
+          Diaristas disponíveis (LMS): <strong style="color:var(--cyan)">${c.diTC}</strong> · 
+          Alocados nas escalas: <strong style="color:var(--amber)">${c.diCobGapFT+c.diCobGapPT+c.diCobAbsFT+c.diCobAbsPT}</strong> · 
+          Faturáveis: <strong style="color:var(--green)">${c.diFat}</strong>
+        </div>`+
+      c.porEscala.map(e=>{
+        const tipoCor=e.tipo==='FT'?'var(--green)':'var(--teal)';
+        const tipoPill=e.tipo==='FT'?'<span class="pill p-ft">FT</span>':'<span class="pill p-pt">PT</span>';
+        const temProblema=e.gap>0||e.abs>0;
+        const cobTotal=e.cobGap+e.cobAbsMeli+e.cobAbs3pl;
+        const coberto=cobTotal>=e.necessidade;
+        const statusIcon=!temProblema?'✓ quadro completo':coberto?'✓ coberto':'⚠ cobertura insuficiente';
+        const statusCor=!temProblema?'var(--green)':coberto?'var(--amber)':'var(--red)';
+
+        return`<div style="margin-bottom:10px;background:var(--bg2);border:1px solid ${temProblema?(coberto?'var(--amber)':'var(--red)'):'var(--border)'};border-radius:7px;overflow:hidden;">
+          <div style="padding:8px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);background:var(--bg3);">
+            ${tipoPill}
+            <span style="font-size:13px;font-weight:600;">${e.esc.nome}</span>
+            <span style="font-family:var(--mono);font-size:10px;color:${statusCor};margin-left:auto;">${statusIcon}</span>
+          </div>
+          <!-- Métricas da escala -->
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--border);">
+            <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Sched</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--a2)">${e.sched}</div>
+            </div>
+            <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Roster</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--a2)">${e.ros}</div>
+            </div>
+            <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">MELI</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:${tipoCor}">${e.meli}</div>
+            </div>
+            <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Presentes</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:var(--green)">${e.pres}</div>
+            </div>
+            <div style="padding:8px 10px;border-right:1px solid var(--border);text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">ABS</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:${e.abs>0?'var(--red)':'var(--muted)'}">${e.abs}</div>
+            </div>
+            <div style="padding:8px 10px;text-align:center;">
+              <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Gap</div>
+              <div style="font-family:var(--mono);font-size:15px;font-weight:600;color:${e.gap>0?'var(--amber)':'var(--muted)'}">${e.gap}</div>
+            </div>
+          </div>
+          <!-- Cobertura desta escala -->
+          ${temProblema?`<div style="padding:8px 13px;background:var(--bg3);display:flex;flex-wrap:wrap;gap:10px;font-size:11px;">
+            ${e.excCobGap>0?`<span style="color:#fb923c">Log Full excess → Gap: ${e.excCobGap} [fat. como ${e.tipo}, 3PL]</span>`:''}
+            ${e.excCobAbs>0?`<span style="color:#fb923c">Log Full excess → ABS: ${e.excCobAbs} [fat. como ${e.tipo}, 3PL]</span>`:''}
+            ${e.cobGap>0?`<span style="color:var(--amber)">Diarista → Gap: ${e.cobGap} [fat. como ${e.tipo}, 3PL]</span>`:''}
+            ${e.abs>0?`<span style="color:var(--a2)">%ABS: ${e.pctAbs}% | CAP: ${e.capPct}%</span>`:''}
+            ${e.cobAbsMeli>0?`<span style="color:var(--green)">MELI paga: ${e.cobAbsMeli} di.</span>`:''}
+            ${e.cobAbs3pl>0?`<span style="color:var(--red)">3PL paga: ${e.cobAbs3pl} di.</span>`:''}
+            ${cobTotal<e.necessidade?`<span style="color:var(--red);font-weight:600">⚠ faltam ${e.necessidade-cobTotal}</span>`:''}
+          </div>`:''}
+        </div>`;
+      }).join('');
+    }
+  }
+  set('fat-sched-ft',c.schedFT);set('fat-ros-ft',c.rosFT);set('fat-meli-ft',c.meliFT,'g');
+  set('fat-abs-ft',c.absFT,'r');set('fat-gap-ft',c.gapFT,'a');
+  set('fat-sched-pt',c.schedPT);set('fat-ros-pt',c.rosPT);set('fat-meli-pt',c.meliPT,'t');
+  set('fat-abs-pt',c.absPT,'r');set('fat-gap-pt',c.gapPT,'a');
+  set('fat-di-tc',c.diTC,'b');
+  set('fat-di-gft',c.diCobGapFT,'a');set('fat-di-gpt',c.diCobGapPT,'a');
+  set('fat-di-aft',c.diCobAbsFT,'r');set('fat-di-apt',c.diCobAbsPT,'r');
+  set('fat-di-fat',c.diFat,'g');set('fat-dc',c.dcCount,'p');
+
+  // Totais
+  set('fat-tot-ft',c.totFT,'g');set('fat-tot-pt',c.totPT,'t');set('fat-tot-di',c.totDI);
+  document.getElementById('fat-tot-geral').textContent=c.totGeral;
+
+  gerarTexto();
+}
+
+function gerarTexto(){
+  const c=calcAtual||calcMELI();if(!c)return;
+  const data=document.getElementById('data-global')?.value;
+  const dtf=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR'):'—';
+  const obs=document.getElementById('obs')?.value||'';
+  const D='─'.repeat(46);
+  const escNomes=escalasAtivas().map(e=>e.nome).join(', ')||'—';
+
+  // escalas em DSR hoje
+  const dsrNomes=(c.escalasDSR||[]).map(e=>e.esc.nome).join(', ');
+
+  let txt=`LANÇAMENTO DE FATURA — SSP36\nData: ${dtf}\nEscalas ativas: ${escNomes}\n`;
+  if(dsrNomes)txt+=`DSR hoje: ${dsrNomes}\n`;
+  txt+=`${D}\n`;
+  txt+=`FULL TIME\n  Scheduling: ${c.schedFT}  |  Rostering: ${c.rosFT}  |  Qty MELI: ${c.meliFT}\n  Presentes: ${c.presFT}  |  ABS: ${c.absFT}  |  Justificados: ${c.justFT||0}  |  Gap: ${c.gapFT}`;
+  if(c.dsrFT>0)txt+=`  |  DSR: ${c.dsrFT}`;
+  txt+='\n';
+  txt+=`\nPART TIME\n  Scheduling: ${c.schedPT}  |  Rostering: ${c.rosPT}  |  Qty MELI: ${c.meliPT}\n  Presentes: ${c.presPT}  |  ABS: ${c.absPT}  |  Justificados: ${c.justPT||0}  |  Gap: ${c.gapPT}`;
+  if(c.dsrPT>0)txt+=`  |  DSR: ${c.dsrPT}`;
+  txt+='\n';
+  if(c.dsrTotal>0){
+    txt+=`\nDSR DO DIA (${c.dsrTotal} pessoa(s)) — folga programada, não é ABS:\n`;
+    (c.escalasDSR||[]).forEach(e=>{
+      if(e.dsr>0){
+        txt+=`  Escala ${e.esc.nome}: ${e.dsr} pessoa(s) de folga\n`;
+        e.pessoasDSR.forEach(p=>txt+=`    - ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'}\n`);
+      }
+    });
+  }
+  txt+=`\nDIARISTAS (LMS): ${c.diTC}\n  Cobertura Gap FT (fat. como FT):  ${c.diCobGapFT}  [resp. 3PL]\n  Cobertura Gap PT (fat. como PT):  ${c.diCobGapPT}  [resp. 3PL]\n  Cobertura ABS FT:                 ${c.diCobAbsFT}  [resp. 3PL]\n  Cobertura ABS PT:                 ${c.diCobAbsPT}  [resp. 3PL]\n  Diaristas faturáveis (excedente): ${c.diFat}\n`;
+  txt+=`\n${D}\nTOTAL MELI APROVADO PARA FATURAR\n  Full Time:   ${c.totFT}\n  Part Time:   ${c.totPT}\n  Diaristas:   ${c.totDI}\n  TOTAL GERAL: ${c.totGeral} pessoa(s)/dia\n`;
+  if(c.dcCount>0)txt+=`\nATENÇÃO: ${c.dcCount} pessoa(s) sem cadastro — verificar antes de fechar.\n`;
+  if(c.faltasFT.length)txt+=`\nFALTAS FT (${c.faltasFT.length}):\n`+c.faltasFT.map(p=>`  - ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'}`).join('\n')+'\n';
+  if(c.faltasPT.length)txt+=`\nFALTAS PT (${c.faltasPT.length}):\n`+c.faltasPT.map(p=>`  - ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'}`).join('\n')+'\n';
+  if(c.justList&&c.justList.length){
+    // agrupa por motivo
+    const porMotivo={};
+    c.justList.forEach(p=>{const m=p.justificativa||'Outro';if(!porMotivo[m])porMotivo[m]=[];porMotivo[m].push(p);});
+    txt+=`\nAUSÊNCIAS JUSTIFICADAS (${c.justList.length}) — não entram no cálculo de ABS:\n`;
+    Object.entries(porMotivo).forEach(([motivo,lista])=>{
+      txt+=`  ${motivo} (${lista.length}):\n`;
+      lista.forEach(p=>txt+=`    - ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'}\n`);
+    });
+  }
+  if(c.soroList.length)txt+=`\nSÓ NO LMS — não rosterizados (${c.soroList.length}):\n`+c.soroList.map(p=>{const t=p.cat==='logfull'?`[LOG FULL ${p.subtipo}]`:p.cat==='diarista'?'[DIARISTA]':'[SEM CADASTRO]';return`  ? ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'} ${t}`;}).join('\n')+'\n';
+  if(c.dcList.length)txt+=`\nSEM CADASTRO (${c.dcList.length}):\n`+c.dcList.map(p=>`  ❓ ${p.nome} | Groot: ${p.idGroot||'—'} | LDPA: ${p.ldpa||'—'}`).join('\n')+'\n';
+  if(obs.trim())txt+=`\nOBSERVAÇÕES:\n${obs.trim()}\n`;
+  txt+=`\nGerado em: ${new Date().toLocaleString('pt-BR')}`;
+  document.getElementById('cbox').textContent=txt;
+}
+
+function copiar(){
+  navigator.clipboard.writeText(document.getElementById('cbox').textContent).then(()=>{
+    const b=event.target;b.textContent='Copiado ✓';setTimeout(()=>b.textContent='Copiar texto',1800);
+  });
+}
+
+// ══ SALVAR DIA ══════════════════════════════════════════
+function salvarDia(){
+  if(!validados.length){alert('Nenhum dado para salvar.');return;}
+  const data=document.getElementById('data-global').value;
+  if(!data){alert('Defina a data de referência.');return;}
+  if(historico.some(d=>d.data===data)&&!confirm('Já existe lançamento para esta data. Sobrescrever?'))return;
+  historico=historico.filter(d=>d.data!==data);
+  const c=calcAtual||calcMELI();
+
+  // listas detalhadas para o resumão
+  const confirmadosFT=validados.filter(p=>p.situacao==='confirmado'&&p.cat==='logfull'&&p.subtipo==='FT');
+  const confirmadosPT=validados.filter(p=>p.situacao==='confirmado'&&p.cat==='logfull'&&p.subtipo==='PT');
+  const faltasFT=validados.filter(p=>p.situacao==='falta'&&p.cat==='logfull'&&p.subtipo==='FT');
+  const faltasPT=validados.filter(p=>p.situacao==='falta'&&p.cat==='logfull'&&p.subtipo==='PT');
+  const diaristasPresentes=validados.filter(p=>p.cat==='diarista');
+  const soroList=validados.filter(p=>p.situacao==='soro');
+  const semCadastro=validados.filter(p=>p.cat==='desconhecido');
+
+  historico.push({
+    data, escalaNome:c.esc?c.esc.nome:'—',
+    schedFT:c.schedFT, schedPT:c.schedPT,
+    rosFT:c.rosFT, rosPT:c.rosPT,
+    meliFT:c.meliFT, meliPT:c.meliPT,
+    presFT:c.presFT, presPT:c.presPT,
+    absFT:c.absFT, absPT:c.absPT,
+    gapFT:c.gapFT, gapPT:c.gapPT,
+    pctAbsGeral:c.pctAbsGeral, capPctGeral:c.capPctGeral,
+    diTC:c.diTC,
+    diCobGapFT:c.diCobGapFT, diCobGapPT:c.diCobGapPT,
+    diCobAbsFT:c.diCobAbsFT, diCobAbsPT:c.diCobAbsPT,
+    diCobAbsFT_mel:c.diCobAbsFT_mel, diCobAbsPT_mel:c.diCobAbsPT_mel,
+    diCobAbsFT_3pl:c.diCobAbsFT_3pl, diCobAbsPT_3pl:c.diCobAbsPT_3pl,
+    excCobGapFT:c.excCobGapFT, excCobGapPT:c.excCobGapPT,
+    excCobAbsFT:c.excCobAbsFT, excCobAbsPT:c.excCobAbsPT,
+    diFat:c.diFat,
+    totFT:c.totFT, totPT:c.totPT, totDI:c.totDI, totGeral:c.totGeral,
+    dcCount:c.dcCount,
+    obs:document.getElementById('obs').value,
+    texto:document.getElementById('cbox').textContent,
+    validados:JSON.parse(JSON.stringify(validados)),
+    confirmadosFT:JSON.parse(JSON.stringify(confirmadosFT)),
+    confirmadosPT:JSON.parse(JSON.stringify(confirmadosPT)),
+    faltasFT:JSON.parse(JSON.stringify(faltasFT)),
+    faltasPT:JSON.parse(JSON.stringify(faltasPT)),
+    diaristasPresentes:JSON.parse(JSON.stringify(diaristasPresentes)),
+    soroList:JSON.parse(JSON.stringify(soroList)),
+    semCadastro:JSON.parse(JSON.stringify(semCadastro)),
+  });
+  historico.sort((a,b)=>b.data.localeCompare(a.data));
+  salvarLS();
+  document.getElementById('b-hist').textContent=historico.length;
+  renderVis();
+  alert('Lançamento salvo no histórico!');
+}
+
+function novoLanc(){
+  if(!confirm('Limpar dados do dia atual? Os lançamentos salvos ficam na Visualização.'))return;
+  rostering=[];presenca=[];validados=[];filtro='todos';calcAtual=null;
+  _arquivos.ros=[];_arquivos.pre=[];
+  document.getElementById('obs').value='';
+  document.getElementById('cbox').textContent='Processe os dados primeiro.';
+  ['dzs-ros','dzs-pre'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ['data-prompt-ros','data-prompt-pre'].forEach(id=>{const el=document.getElementById(id);if(el)el.remove();});
+  renderFilesPanel('ros');renderFilesPanel('pre');
+  atualizarStatusImport();
+  sessionStorage.removeItem(LS+'_sess');
+  showTab('imp');
+}
+
+// ══ VISUALIZAÇÃO UNIFICADA ══════════════════════════════
+function onVisDiaChange(){
+  // limpa filtro de mês ao selecionar dia
+  const m=document.getElementById('hist-mes');
+  if(m)m.value='';
+  renderVis();
+}
+function onVisMesChange(){
+  // limpa filtro de dia ao selecionar mês
+  const d=document.getElementById('hist-dia');
+  if(d)d.value='';
+  renderVis();
+}
+function limparFiltroDia(){
+  const el=document.getElementById('hist-dia');
+  if(el)el.value='';
+}
+function populateVisSel(){renderVis();}
+
+function renderVis(){
+  const dia=document.getElementById('hist-dia')?.value;
+  const mes=document.getElementById('hist-mes')?.value;
+  document.getElementById('b-hist').textContent=historico.length;
+
+  // Bloco "dia atual"
+  const visAtual=document.getElementById('vis-atual');
+  const visContent=document.getElementById('vis-content');
+  const histList=document.getElementById('hist-list');
+  const cWrap=document.getElementById('consolidado-wrap');
+
+  // decide o que mostrar
+  if(dia){
+    // --- Dia específico do histórico ---
+    if(visAtual)visAtual.style.display='none';
+    if(cWrap)cWrap.style.display='none';
+    const d=historico.find(h=>h.data===dia);
+    if(!d){
+      histList.innerHTML=`<div class="empty"><div class="empty-i">📅</div><div class="empty-t">Nenhum lançamento salvo para ${new Date(dia+'T12:00:00').toLocaleDateString('pt-BR')}.<br>Faça a importação e salve na aba Fatura.</div></div>`;
+      return;
+    }
+    // renderiza o card do dia com detalhe completo
+    histList.innerHTML=renderDiaCard(d,0,true);
+  } else if(mes){
+    // --- Mês: consolidado + lista ---
+    if(visAtual)visAtual.style.display='none';
+    const fil=historico.filter(d=>d.data.startsWith(mes));
+    if(fil.length&&cWrap){
+      cWrap.style.display='block';
+      const [ano,m2]=mes.split('-');
+      document.getElementById('mes-title').textContent=new Date(+ano,+m2-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+      document.getElementById('mes-dias').textContent=fil.length+' dia(s)';
+      document.getElementById('mc-ft').textContent=fil.reduce((s,d)=>s+(d.totFT||0),0);
+      document.getElementById('mc-pt').textContent=fil.reduce((s,d)=>s+(d.totPT||0),0);
+      document.getElementById('mc-di').textContent=fil.reduce((s,d)=>s+(d.totDI||0),0);
+      document.getElementById('mc-abs').textContent=fil.reduce((s,d)=>s+(d.absFT||0)+(d.absPT||0),0);
+      document.getElementById('mc-dias').textContent=fil.length;
+    } else if(cWrap) cWrap.style.display='none';
+    if(!fil.length){histList.innerHTML='<div class="empty"><div class="empty-i">📅</div><div class="empty-t">Nenhum lançamento neste mês.</div></div>';return;}
+    histList.innerHTML=fil.map((d,i)=>renderDiaCard(d,i,false)).join('');
+  } else {
+    // --- Sem filtro: mostra dia atual se houver + lista completa ---
+    if(cWrap)cWrap.style.display='none';
+    if(validados.length&&visAtual&&visContent){
+      visAtual.style.display='block';
+      const c2=calcAtual||calcMELI();
+      visContent.innerHTML=renderVisDetalhe(c2,document.getElementById('data-global').value,c2?.esc?.nome||'—',validados);
+    } else if(visAtual) visAtual.style.display='none';
+    if(!historico.length){histList.innerHTML='<div class="empty"><div class="empty-i">📅</div><div class="empty-t">Nenhum lançamento salvo ainda.<br>Salve um dia na aba Fatura para ver aqui.</div></div>';return;}
+    histList.innerHTML=historico.map((d,i)=>renderDiaCard(d,i,false)).join('');
+  }
+}
+
+function renderDiaCard(d,i,aberto){
+  const dtf=new Date(d.data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+  const absTot=(d.absFT||0)+(d.absPT||0);
+  const gapTot=(d.gapFT||0)+(d.gapPT||0);
+  const diCobGap=(d.diCobGapFT||0)+(d.diCobGapPT||0);
+  const diCobAbsMeli=(d.diCobAbsFT_mel||0)+(d.diCobAbsPT_mel||0);
+  const diCobAbs3pl=(d.diCobAbsFT||0)+(d.diCobAbsPT||0);
+
+  // ── helper: tabela de pessoas ──────────────────────
+  const tabelaPessoas=(lista,titulo,cor,colunaExtra)=>{
+    if(!lista||!lista.length)return'';
+    return`<div style="margin-bottom:10px;">
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:${cor};margin-bottom:4px;padding:0 2px;">${titulo} <span style="opacity:.6">(${lista.length})</span></div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:auto;max-height:200px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">Nome</th>
+            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">ID Groot</th>
+            <th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">LDPA</th>
+            ${colunaExtra?`<th style="text-align:left;padding:5px 10px;font-family:var(--mono);font-size:9px;color:var(--muted);border-bottom:1px solid var(--border);text-transform:uppercase;position:sticky;top:0;background:var(--bg3);">${colunaExtra}</th>`:''}
+          </tr></thead>
+          <tbody>${lista.map(p=>`<tr style="${p.rosterPendente?'background:#2a1e08;':p.situacao==='falta'?'background:var(--rbg);':''}">
+            <td style="padding:5px 10px;font-size:11px;border-bottom:1px solid var(--border)">${p.nome||'—'}${p.rosterPendente?'<span style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-left:5px;">⚠</span>':''}</td>
+            <td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.idGroot||'—'}</td>
+            <td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.ldpa||'—'}</td>
+            ${colunaExtra?`<td style="padding:5px 10px;font-size:10px;font-family:var(--mono);color:var(--muted);border-bottom:1px solid var(--border)">${p.escalaNome||'—'}</td>`:''}
+          </tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>`;
+  };
+
+  // ── helper: métrica ────────────────────────────────
+  const met=(lbl,val,cor,sub)=>`
+    <div style="padding:10px 12px;border-right:1px solid var(--border);text-align:center;">
+      <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">${lbl}</div>
+      <div style="font-family:var(--mono);font-size:20px;font-weight:700;color:${cor};line-height:1">${val}</div>
+      ${sub?`<div style="font-size:9px;color:var(--muted);margin-top:2px;">${sub}</div>`:''}
+    </div>`;
+
+  const corpo=`
+    <!-- ── SEÇÃO 1: RESUMO DE LANÇAMENTO ─────────────── -->
+    <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg3);">
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:10px;">Resumo para lançamento</div>
+
+      <!-- FT -->
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="pill p-ft" style="font-size:10px;">FT</span>
+          <span style="font-family:var(--mono);font-size:13px;color:var(--green);font-weight:600;">${d.presFT||0} presentes</span>
+          ${(d.gapFT||0)>0||((d.excCobGapFT||0)+(d.diCobGapFT||0))>0?`
+            <span style="font-size:11px;color:var(--muted)">+</span>
+            <span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapFT||0)+(d.diCobGapFT||0)} cobertura gap</span>`:''}
+          <span style="font-size:11px;color:var(--muted)">=</span>
+          <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--green)">${d.meliFT||0} a lançar</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green)">${d.meliFT||0}</div>
+      </div>
+
+      <!-- PT -->
+      ${(d.schedPT||0)>0||((d.meliPT||0)>0)?`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:6px;">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+          <span class="pill p-pt" style="font-size:10px;">PT</span>
+          <span style="font-family:var(--mono);font-size:13px;color:var(--teal);font-weight:600;">${d.presPT||0} presentes</span>
+          ${(d.gapPT||0)>0?`<span style="font-size:11px;color:var(--muted)">+</span><span style="font-family:var(--mono);font-size:12px;color:var(--amber)">${(d.excCobGapPT||0)+(d.diCobGapPT||0)} cobertura gap</span>`:''}
+          <span style="font-size:11px;color:var(--muted)">=</span>
+          <span style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--teal)">${d.meliPT||0} a lançar</span>
+        </div>
+        <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--teal)">${d.meliPT||0}</div>
+      </div>`:''}
+
+      <!-- Diaristas -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+        <div style="padding:9px 12px;background:var(--rbg);border:1px solid var(--border);border-radius:6px;">
+          <div style="font-size:10px;color:var(--red);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px;">Diaristas 3PL</div>
+          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--red)">${diCobGap+diCobAbs3pl}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${diCobGap>0?diCobGap+' gap':''} ${diCobAbs3pl>0?(diCobGap>0?'· ':'')+diCobAbs3pl+' ABS excede CAP':''}</div>
+        </div>
+        <div style="padding:9px 12px;background:var(--gbg);border:1px solid var(--border);border-radius:6px;">
+          <div style="font-size:10px;color:var(--green);font-family:var(--mono);text-transform:uppercase;margin-bottom:4px;">Diaristas MELI</div>
+          <div style="font-family:var(--mono);font-size:18px;font-weight:700;color:var(--cyan)">${(d.diFat||0)+diCobAbsMeli}</div>
+          <div style="font-size:10px;color:var(--muted);margin-top:2px;">${diCobAbsMeli>0?diCobAbsMeli+' cob. ABS CAP':''} ${d.diFat>0?((diCobAbsMeli>0?'· ':'')+d.diFat+' excedente'):''}</div>
+        </div>
+      </div>
+
+      <!-- Total MELI -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2);border:1px solid var(--border);border-radius:6px;overflow:hidden;">
+        ${met('FT',d.meliFT||0,'var(--green)','')}
+        ${met('PT',d.meliPT||0,'var(--teal)','')}
+        ${met('Diaristas',(d.diFat||0)+diCobAbsMeli,'var(--cyan)','')}
+        <div style="padding:10px 12px;text-align:center;background:rgba(34,197,94,.07);">
+          <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">Total MELI</div>
+          <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--green)">${d.totGeral||0}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SEÇÃO 2: ABS / GAP / CAP ──────────────────── -->
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--border);">
+      ${met('Sched',`${d.schedFT||0}FT · ${d.schedPT||0}PT`,'var(--a2)','')}
+      ${met('Roster',`${d.rosFT||0}FT · ${d.rosPT||0}PT`,'var(--a2)','')}
+      ${met('ABS',absTot,absTot>0?'var(--red)':'var(--muted)',`FT:${d.absFT||0} · PT:${d.absPT||0}`)}
+      ${met('Gap',gapTot,gapTot>0?'var(--amber)':'var(--muted)',`FT:${d.gapFT||0} · PT:${d.gapPT||0}`)}
+      <div style="padding:10px 12px;text-align:center;">
+        <div style="font-size:9px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;">%ABS · CAP</div>
+        <div style="font-family:var(--mono);font-size:14px;font-weight:700;color:var(--amber)">${d.pctAbsGeral||0}%</div>
+        <div style="font-size:9px;color:var(--muted);margin-top:2px;">CAP ${d.capPctGeral||0}%</div>
+      </div>
+    </div>
+
+    <!-- ── SEÇÃO 3: LISTAS DE PESSOAS ────────────────── -->
+    <div style="padding:12px 14px;border-bottom:1px solid var(--border);">
+      <div style="font-size:10px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--accent2);margin-bottom:10px;">Pessoas do dia</div>
+      ${tabelaPessoas(d.confirmadosFT,'✓ Full Time presentes','var(--green)','Escala')}
+      ${tabelaPessoas(d.confirmadosPT,'✓ Part Time presentes','var(--teal)','Escala')}
+      ${tabelaPessoas(d.diaristasPresentes,'◆ Diaristas (LMS)','var(--cyan)','')}
+      ${tabelaPessoas(d.faltasFT,'✗ Faltas — Full Time','var(--red)','Escala')}
+      ${tabelaPessoas(d.faltasPT,'✗ Faltas — Part Time','var(--red)','Escala')}
+      ${tabelaPessoas(d.soroList,'⚠ Só no LMS — verificar','var(--amber)','Tipo')}
+      ${tabelaPessoas(d.semCadastro,'❓ Sem cadastro','#a78bfa','')}
+    </div>
+
+    <!-- ── SEÇÃO 4: OBS + TEXTO ──────────────────────── -->
+    ${d.obs?`<div style="padding:9px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--muted);"><strong style="color:var(--text)">Obs:</strong> ${d.obs}</div>`:''}
+    ${d.texto?`
+    <details style="border-bottom:1px solid var(--border);">
+      <summary style="padding:9px 14px;font-size:11px;color:var(--muted);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;">
+        <span style="font-family:var(--mono)">▶</span> Ver texto do lançamento
+      </summary>
+      <pre style="margin:0;padding:10px 14px;font-family:var(--mono);font-size:10px;color:var(--muted);white-space:pre-wrap;line-height:1.6;background:var(--bg3);">${d.texto}</pre>
+    </details>`:''}
+
+    <!-- ── AÇÕES ─────────────────────────────────────── -->
+    <div style="padding:9px 14px;display:flex;gap:8px;">
+      <button class="btn btn-o btn-sm" onclick="copiarTextoDia('${d.data}')">Copiar texto</button>
+      <button class="btn btn-d btn-sm" onclick="event.stopPropagation();delHist('${d.data}')">Excluir</button>
+    </div>`;
+
+  return`<div class="hist-day" style="margin-bottom:8px;">
+    <div class="hist-hdr" onclick="toggleHist(${i},this)">
+      <div class="hist-date">${dtf}</div>
+      <div class="hist-esc">${d.escalaNome}</div>
+      <div class="hist-stats">
+        <span class="hstat" style="color:var(--green)">FT ${d.meliFT||0}</span>
+        <span class="hstat" style="color:var(--teal)">PT ${d.meliPT||0}</span>
+        <span class="hstat" style="color:var(--cyan)">DI ${(d.diFat||0)+diCobAbsMeli}</span>
+        ${absTot>0?`<span class="hstat" style="color:var(--red)">ABS ${absTot}</span>`:''}
+        ${gapTot>0?`<span class="hstat" style="color:var(--amber)">GAP ${gapTot}</span>`:''}
+        <span class="hstat" style="color:var(--green);font-weight:700">= ${d.totGeral||0}</span>
+      </div>
+      <span style="font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:6px;" id="arr-${i}">${aberto?'▲':'▼'}</span>
+    </div>
+    <div class="hist-body ${aberto?'open':''}" id="hb-${i}">${corpo}</div>
+  </div>`;
+}
+
+function copiarTextoDia(data){
+  const d=historico.find(h=>h.data===data);
+  if(!d||!d.texto)return;
+  navigator.clipboard.writeText(d.texto).then(()=>alert('Texto copiado!'));
+}
+
+function renderVisDetalhe(c,data,escalaNome,vList){
+  if(!c)return'';
+  const dtf=data?new Date(data+'T12:00:00').toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}):'—';
+  const resumoTxt=`Data: ${dtf} | Escala: ${escalaNome}\nFull Time:  Rosterizado: ${c.rosFT} | MELI: ${c.meliFT} | ABS: ${c.absFT} | Gap: ${c.gapFT}\nPart Time:  Rosterizado: ${c.rosPT} | MELI: ${c.meliPT} | ABS: ${c.absPT} | Gap: ${c.gapPT}\nDiaristas:  LMS: ${c.diTC} | Fat: ${c.diFat} | Cob 3PL: ${c.diCobGapFT+c.diCobGapPT+c.diCobAbsFT+c.diCobAbsPT}\nTOTAL MELI: ${c.totGeral}`;
+  let html=`<div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--a2)">${dtf} — ${escalaNome}</div>`;
+  html+=`<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;margin-bottom:12px;overflow:hidden;">
+    <div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:12px;font-weight:600;">Resumo para lançamento</div>
+      <button class="btn btn-o btn-sm" onclick="copiarResumo()" id="btn-copy-resumo">Copiar resumo</button>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--border);">
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">HC FT<br>Rosteriz.</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--a2)">${c.rosFT}</div></div>
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">MELI FT</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--green)">${c.meliFT}</div></div>
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">ABS FT</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--red)">${c.absFT}${c.gapFT>0?`<div style="font-size:9px;color:var(--amber)">+gap ${c.gapFT}</div>`:''}</div></div>
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">MELI PT</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--teal)">${c.meliPT}</div></div>
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">ABS PT</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--red)">${c.absPT}${c.gapPT>0?`<div style="font-size:9px;color:var(--amber)">+gap ${c.gapPT}</div>`:''}</div></div>
+      <div style="padding:9px 11px;border-right:1px solid var(--border);text-align:center;"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">DI Fat.</div><div style="font-family:var(--mono);font-size:18px;font-weight:600;color:var(--cyan)">${c.diFat}</div></div>
+      <div style="padding:9px 11px;text-align:center;background:var(--gbg);"><div style="font-size:10px;color:var(--muted);font-family:var(--mono);text-transform:uppercase;margin-bottom:2px;">Total MELI</div><div style="font-family:var(--mono);font-size:22px;font-weight:600;color:var(--green)">${c.totGeral}</div></div>
+    </div>
+    <textarea id="resumo-txt-hidden" style="position:absolute;opacity:0;pointer-events:none;height:1px;">${resumoTxt}</textarea>
+  </div>`;
+  if(vList&&vList.length){
+    html+=`<div class="slabel" style="margin-top:14px">Pessoas do dia</div>
+    <div class="frow">
+      <button class="fb active" onclick="setVF('todos',this)">Todos</button>
+      <button class="fb" onclick="setVF('confirmado',this)">Confirmados</button>
+      <button class="fb" onclick="setVF('falta',this)">Faltas</button>
+      <button class="fb" onclick="setVF('soro',this)">Só TC</button>
+    </div>
+    <div class="tw"><table><thead><tr><th>Nome</th><th>ID Groot</th><th>LDPA</th><th>Tipo</th><th>Situação</th></tr></thead><tbody id="tb-vis">`;
+    html+=vList.map(p=>{
+      const rc=p.situacao==='falta'?'rfa':p.situacao==='soro'?'rso':'';
+      const tp=p.cat==='logfull'?(p.subtipo==='PT'?'<span class="pill p-pt">PT</span>':'<span class="pill p-ft">FT</span>'):p.cat==='diarista'?'<span class="pill p-di">DIARISTA</span>':'<span class="pill p-dc">SEM CAD.</span>';
+      const sp=p.situacao==='confirmado'?'<span class="pill p-ok">CONFIRMADO</span>':p.situacao==='falta'?'<span class="pill p-fa">FALTA</span>':'<span class="pill p-so">SÓ TC</span>';
+      return`<tr class="${rc}" data-sit="${p.situacao}"><td style="font-weight:500">${p.nome||'—'}</td><td class="msm">${p.idGroot||'—'}</td><td class="msm">${p.ldpa||'—'}</td><td>${tp}</td><td>${sp}</td></tr>`;
+    }).join('');
+    html+=`</tbody></table></div>`;
+  }
+  return html;
+}
+
+function copiarResumo(){
+  const el=document.getElementById('resumo-txt-hidden');
+  if(!el)return;
+  navigator.clipboard.writeText(el.value).then(()=>{
+    const b=document.getElementById('btn-copy-resumo');
+    if(b){b.textContent='Copiado ✓';setTimeout(()=>b.textContent='Copiar resumo',1800);}
+  });
+}
+
+function setVF(f,btn){
+  document.querySelectorAll('#vis-content .fb,#hist-list .fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#tb-vis tr').forEach(tr=>{
+    tr.style.display=(f==='todos'||tr.dataset.sit===f)?'':'none';
+  });
+}
+
+function delHist(data){if(!confirm('Remover este lançamento?'))return;historico=historico.filter(d=>d.data!==data);salvarLS();renderVis();}
+function limparHist(){if(!confirm('Apagar TODO o histórico?'))return;historico=[];salvarLS();renderVis();}
+
+function exportarHistCSV(){
+  if(!historico.length){alert('Nenhum dado para exportar.');return;}
+  const cab='Data;Escala;Sched FT;Sched PT;Roster FT;Roster PT;MELI FT;MELI PT;Pres FT;Pres PT;ABS FT;ABS PT;Gap FT;Gap PT;DI TC;DI CobGapFT;DI CobGapPT;DI CobAbsFT;DI CobAbsPT;DI Fat;Tot FT;Tot PT;Tot DI;Tot Geral;Sem Cadastro;Observacoes\n';
+  const linhas=historico.map(d=>{
+    const cols=[d.data,d.escalaNome,d.schedFT,d.schedPT,d.rosFT,d.rosPT,d.meliFT,d.meliPT,d.presFT,d.presPT,d.absFT,d.absPT,d.gapFT,d.gapPT,d.diTC,d.diCobGapFT,d.diCobGapPT,d.diCobAbsFT,d.diCobAbsPT,d.diFat,d.totFT,d.totPT,d.totDI,d.totGeral,d.dcCount,(d.obs||'').replace(/\n/g,' ')];
+    return cols.map(c=>`"${String(c||0).replace(/"/g,'""')}"`).join(';');
+  }).join('\n');
+  baixar('\uFEFF'+cab+linhas,'historico_ssp36.csv','text/csv;charset=utf-8');
+}
+function importarHistCSV(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const tryRead=(enc)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result);r.onerror=rej;r.readAsText(f,enc);});
+  tryRead('UTF-8').then(txt=>{
+    const replacements=(txt.match(/\uFFFD/g)||[]).length;
+    return replacements>3?tryRead('windows-1252'):txt;
+  }).then(txt=>{
+    const rows=parseCSV(txt.replace(/^\uFEFF/,''));let add=0;
+    rows.forEach(p=>{
+      if(!p[0]||!/^\d{4}-\d{2}-\d{2}$/.test(p[0]))return;
+      const entry={data:p[0],escalaNome:p[1]||'',schedFT:+p[2]||0,schedPT:+p[3]||0,rosFT:+p[4]||0,rosPT:+p[5]||0,meliFT:+p[6]||0,meliPT:+p[7]||0,presFT:+p[8]||0,presPT:+p[9]||0,absFT:+p[10]||0,absPT:+p[11]||0,gapFT:+p[12]||0,gapPT:+p[13]||0,diTC:+p[14]||0,diCobGapFT:+p[15]||0,diCobGapPT:+p[16]||0,diCobAbsFT:+p[17]||0,diCobAbsPT:+p[18]||0,diFat:+p[19]||0,totFT:+p[20]||0,totPT:+p[21]||0,totDI:+p[22]||0,totGeral:+p[23]||0,dcCount:+p[24]||0,obs:p[25]||'',texto:''};
+      if(!historico.some(d=>d.data===entry.data)){historico.push(entry);add++;}
+    });
+    historico.sort((a,b)=>b.data.localeCompare(a.data));
+    salvarLS();renderVis();alert(add+' registro(s) importado(s).');
+  }).catch(()=>alert('Erro ao ler o arquivo.'));
+  ev.target.value='';
+}
+function exportarConsolidadoCSV(){
+  const mes=document.getElementById('hist-mes').value;
+  const fil=mes?historico.filter(d=>d.data.startsWith(mes)):historico;
+  if(!fil.length){alert('Nenhum dado para exportar.');return;}
+  const cab='Data;Escala;MELI FT;MELI PT;Tot FT;Tot PT;Tot DI;Tot Geral;ABS FT;ABS PT;Gap FT;Gap PT;Observacoes\n';
+  const linhas=fil.map(d=>{
+    const cols=[d.data,d.escalaNome,d.meliFT,d.meliPT,d.totFT,d.totPT,d.totDI,d.totGeral,d.absFT,d.absPT,d.gapFT,d.gapPT,(d.obs||'').replace(/\n/g,' ')];
+    return cols.map(c=>`"${String(c||0).replace(/"/g,'""')}"`).join(';');
+  }).join('\n');
+  baixar('\uFEFF'+cab+linhas,(mes?`consolidado_${mes}`:'consolidado')+'_ssp36.csv','text/csv;charset=utf-8');
+}
+
+// ══ UTILS ══════════════════════════════════════════════
+function baixar(c,n,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=n;a.click();}
+</script>
+</body>
+</html>
