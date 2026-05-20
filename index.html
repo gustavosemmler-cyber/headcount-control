@@ -2667,6 +2667,7 @@ function cruzar(){
   });
 
   showTab('val');renderStats();renderVal();salvarLS();
+  _autoSalvarDia(); // salva automaticamente no histórico ao cruzar dados
 }
 
 // ══ VALIDAÇÃO RENDER ════════════════════════════════════
@@ -2951,6 +2952,7 @@ function aplicarJust(i,situacao,justificativa){
   document.getElementById('modal-just')?.remove();
   calcAtual=calcMELI();
   renderStats();renderVal();salvarLS();
+  _autoSalvarDia(); // atualiza histórico com nova situação
 }
 
 function aplicarJustMotivo(i){
@@ -2963,6 +2965,7 @@ function aplicarJustMotivo(i){
   document.getElementById('modal-just')?.remove();
   calcAtual=calcMELI();
   renderStats();renderVal();salvarLS();
+  _autoSalvarDia(); // atualiza histórico com nova justificativa
 }
 
 // ══ CÁLCULO MELI ════════════════════════════════════════
@@ -3454,11 +3457,24 @@ function copiar(){
 }
 
 // ══ SALVAR DIA ══════════════════════════════════════════
+// Salva silenciosamente (sem confirmação) — chamado automaticamente após cruzar/validar
+function _autoSalvarDia(){
+  if(!validados.length)return;
+  const data=document.getElementById('data-global')?.value;
+  if(!_dataValida(data))return;
+  _gravarHistorico(data);
+}
+
 function salvarDia(){
   if(!validados.length){alert('Nenhum dado para salvar.');return;}
   const data=document.getElementById('data-global').value;
   if(!data){alert('Defina a data de referência.');return;}
   if(historico.some(d=>d.data===data)&&!confirm('Já existe lançamento para esta data. Sobrescrever?'))return;
+  _gravarHistorico(data);
+  alert('Lançamento salvo no histórico!');
+}
+
+function _gravarHistorico(data){
   historico=historico.filter(d=>d.data!==data);
   const c=calcAtual||calcMELI();
 
@@ -3505,9 +3521,9 @@ function salvarDia(){
     dcCount:c.dcCount,
     // por escala
     porEscala:JSON.parse(JSON.stringify(c.porEscala||[])),
-    // texto e obs
-    obs:document.getElementById('obs').value,
-    texto:document.getElementById('cbox').textContent,
+    // texto e obs — gera o texto da fatura se ainda não estiver no cbox
+    obs:document.getElementById('obs').value||'',
+    texto:(()=>{const cb=document.getElementById('cbox');const t=cb?.textContent||'';if(!t||t==='Processe os dados primeiro.'){gerarFatura();return cb?.textContent||'';}return t;})(),
     // listas
     validados:JSON.parse(JSON.stringify(validados)),
     confirmadosFT:JSON.parse(JSON.stringify(confirmadosFT)),
@@ -3524,7 +3540,6 @@ function salvarDia(){
   salvarLS();
   document.getElementById('b-hist').textContent=historico.length;
   renderVis();
-  alert('Lançamento salvo no histórico!');
 }
 
 function novoLanc(){
