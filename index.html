@@ -1203,7 +1203,14 @@ async function carregarGS(){
         escalas=d.escalas.map(e=>({...e,dsrDia:(e.dsrDia===undefined||e.dsrDia===null||e.dsrDia==='')?null:parseInt(e.dsrDia)}));
       if(Array.isArray(d.logFull))logFull=d.logFull;
       if(Array.isArray(d.diaristas))diaristas=d.diaristas;
-      if(Array.isArray(d.historico))historico=d.historico;
+      if(Array.isArray(d.historico)){
+        // Merge: GS é fonte primária; preserva entradas locais ainda não enviadas ao GS
+        const gsKeys=new Set(d.historico.map(h=>h.data));
+        const soLocal=historico.filter(h=>!gsKeys.has(h.data));
+        historico=[...d.historico,...soLocal].sort((a,b)=>b.data.localeCompare(a.data));
+        // Se havia entradas locais ausentes no GS, sincroniza agora
+        if(soLocal.length>0)_salvarGS();
+      }
       nxEsc=escalas.reduce((m,e)=>Math.max(m,e.id),0)+1;
       // Só atualiza data do GS se for válida E a data local ainda não estiver definida
       if(_dataValida(d.dataGlobal)){
@@ -3539,6 +3546,7 @@ function _gravarHistorico(data){
   });
   historico.sort((a,b)=>b.data.localeCompare(a.data));
   salvarLS();
+  _salvarGS(); // save imediato no GS — não depende só do debounce de 1.5s
   document.getElementById('b-hist').textContent=historico.length;
   renderVis();
 }
